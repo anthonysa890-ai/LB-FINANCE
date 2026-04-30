@@ -8111,3 +8111,14 @@ window.toggleSidebar = toggleSidebar;
 
 window.appState = appState;
 window._supabase = _supabase;
+
+
+// --- PARTIDA DO APLICATIVO ---
+window.addEventListener('DOMContentLoaded', async () => {
+    console.log('Iniciando sistema...');
+    if (window._supabase) {
+        const { checkSession } = await import('./services/auth.js');
+        checkSession(window._supabase);
+        if (typeof checkInactivity === 'function') checkInactivity();
+    }
+});
