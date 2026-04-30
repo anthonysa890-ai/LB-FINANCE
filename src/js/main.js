@@ -8055,6 +8055,8 @@ window.renderNewsList = renderNewsList;
 window.saveProfileData = saveProfileData;
 
 
+
+
 // EXPORTACOES GLOBAIS
 window.toggleNavGroup = toggleNavGroup;
 window.switchTab = switchTab;
@@ -8070,6 +8072,23 @@ window.maskCPF = maskCPF;
 window.maskPhone = maskPhone;
 window.triggerPlanSync = triggerPlanSync;
 window.toggleSidebar = toggleSidebar;
-
 window.appState = appState;
 window._supabase = _supabase;
+
+// --- LOGICA DE STARTUP FINAL ---
+async function startupApp() {
+    console.log('Iniciando LB Finance...');
+    if (window._supabase) {
+        try {
+            const { data: { session }, error } = await window._supabase.auth.getSession();
+            if (session) {
+                window.appState.user.id = session.user.id;
+                window.appState.user.email = session.user.email;
+                if (typeof triggerPlanSync === 'function') triggerPlanSync();
+            } else {
+                window.location.href = 'login.html';
+            }
+        } catch (e) { console.error(e); }
+    }
+}
+window.addEventListener('DOMContentLoaded', startupApp);
