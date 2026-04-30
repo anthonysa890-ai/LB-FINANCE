@@ -1,0 +1,7 @@
+node_modules
+dist
+.claude
+.gemini
+*.log
+.env
+.DS_Store

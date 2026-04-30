@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LB Finance | Entrar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --pink:    #e01d8e;
+      --purple:  #8b5cf6;
+      --grad:    linear-gradient(135deg, #e01d8e 0%, #8b5cf6 100%);
+      --border:  #e2e8f0;
+      --text:    #1e293b;
+      --muted:   #94a3b8;
+      --subtle:  #64748b;
+      --success: #10b981;
+    }
+
+    html, body {
+      height: 100%; overflow: hidden;
+      font-family: 'Inter', sans-serif;
+      background: #fff; color: var(--text);
+    }
+
+    input[type="password"]::-ms-reveal,
+    input[type="password"]::-ms-clear { display: none; }
+    input[type="password"]::-webkit-credentials-auto-fill-button { display: none; }
+
+    /* ══════════════ LAYOUT PRINCIPAL ══════════════ */
+    .page {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      height: 100vh;
+    }
+
+    /* ══════════════ PAINEL ESQUERDO ══════════════ */
+    .left {
+      position: relative;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 0 56px;
+      overflow: hidden;
+      background: #fafbff;
+      border-right: 1px solid var(--border);
+    }
+    .left-logo {
+      position: absolute; top: 28px; left: 56px; z-index: 2;
+      display: flex; align-items: center; gap: 10px; text-decoration: none;
+    }
+    .left-logo .lb-box {
+      width: 38px; height: 38px; border-radius: 11px;
+      background: var(--grad);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 14px rgba(139,92,246,0.3);
+    }
+    .left-logo .lb-box img { width: 26px; height: 26px; object-fit: contain; filter: brightness(0) invert(1); }
+    .left-logo span {
+      font-family: 'Outfit', sans-serif; font-size: 1.15rem; font-weight: 800;
+      background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    /* orbs suaves */
+    .orb {
+      position: absolute; border-radius: 50%; filter: blur(56px);
+      animation: floatOrb var(--dur, 7s) ease-in-out infinite alternate;
+      pointer-events: none; z-index: 0;
+    }
+    .orb1 { width: 280px; height: 280px; background: rgba(224,29,142,0.08); top: -80px; left: -80px; --dur: 8s; }
+    .orb2 { width: 220px; height: 220px; background: rgba(139,92,246,0.09); bottom: -60px; right: -60px; --dur: 10s; }
+    .orb3 { width: 160px; height: 160px; background: rgba(224,29,142,0.06); top: 38%; right: 8%; --dur: 6s; }
+    @keyframes floatOrb {
+      0%   { transform: translate(0,0) scale(1); }
+      100% { transform: translate(16px, 20px) scale(1.06); }
+    }
+
+    .left-grid { display: none; }
+
+    .left-inner {
+      position: relative; z-index: 1;
+      animation: slideInLeft 0.7s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-28px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    /* badge */
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #fff;
+      border: 1px solid rgba(224,29,142,0.2);
+      border-radius: 50px; padding: 5px 14px; margin-bottom: 20px;
+      font-size: 0.74rem; font-weight: 600; color: var(--pink);
+      box-shadow: 0 2px 8px rgba(224,29,142,0.08);
+      width: fit-content;
+    }
+    .badge-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 6px var(--success);
+      animation: blink 2s ease-in-out infinite;
+    }
+    @keyframes blink {
+      0%,100% { opacity: 1; }
+      50%      { opacity: 0.3; }
+    }
+
+    .left h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(1.9rem, 2.6vw, 2.5rem);
+      font-weight: 900; line-height: 1.15;
+      color: var(--text); margin-bottom: 12px;
+    }
+    .left h1 .grad-text {
+      background: linear-gradient(135deg, #e01d8e, #8b5cf6, #e01d8e);
+      background-size: 200% 200%;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      animation: gradShift 4s ease infinite;
+    }
+    @keyframes gradShift {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .left-desc {
+      font-size: 0.87rem; line-height: 1.65;
+      color: var(--muted); margin-bottom: 24px; max-width: 380px;
+    }
+
+    /* ── Budget card ── */
+    .budget-card-wrap {
+      perspective: 900px;
+    }
+    .budget-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 18px; padding: 18px 20px;
+      box-shadow: 0 4px 24px rgba(139,92,246,0.07), 0 1px 4px rgba(0,0,0,0.04);
+      animation: fadeUp 0.8s 0.2s cubic-bezier(0.22,1,0.36,1) both;
+      transform-style: preserve-3d;
+      transition: transform 0.12s ease, box-shadow 0.2s ease;
+      will-change: transform;
+    }
+    .budget-card:hover {
+      box-shadow: 0 16px 48px rgba(139,92,246,0.14), 0 4px 12px rgba(0,0,0,0.06);
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .bc-header {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
+    }
+    .bc-title {
+      font-size: 0.78rem; font-weight: 700;
+      color: var(--text); display: flex; align-items: center; gap: 6px;
+    }
+    .bc-tag {
+      font-size: 0.67rem; font-weight: 600; padding: 2px 9px; border-radius: 50px;
+      background: rgba(16,185,129,0.1); color: #059669; border: 1px solid rgba(16,185,129,0.2);
+    }
+
+    .b-rows { display: flex; flex-direction: column; gap: 10px; }
+    .b-row  { display: flex; flex-direction: column; gap: 5px; }
+    .b-label { display: flex; justify-content: space-between; }
+    .b-label span:first-child { font-size: 0.74rem; color: var(--subtle); }
+    .b-label span:last-child  { font-size: 0.72rem; font-weight: 600; }
+    .b-bar { height: 5px; border-radius: 99px; background: #f1f5f9; overflow: hidden; }
+    .b-fill {
+      height: 100%; border-radius: 99px;
+      width: 0%;
+    }
+    .b-fill.bar1 { animation: barPulse1 3.5s ease-in-out infinite; }
+    .b-fill.bar2 { animation: barPulse2 4.2s ease-in-out infinite; }
+    .b-fill.bar3 { animation: barPulse3 3.8s ease-in-out infinite; }
+    @keyframes barPulse1 {
+      0%,100% { width: 77%; }
+      50%      { width: 62%; }
+    }
+    @keyframes barPulse2 {
+      0%,100% { width: 93%; }
+      50%      { width: 74%; }
+    }
+    @keyframes barPulse3 {
+      0%,100% { width: 47%; }
+      50%      { width: 28%; }
+    }
+
+    /* stats row */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-top: 14px;
+    }
+    .stat-pill {
+      background: #f8fafc; border: 1px solid var(--border);
+      border-radius: 12px; padding: 10px 12px; text-align: center;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .stat-pill:hover { background: #fff; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+    .stat-val {
+      font-family: 'Outfit', sans-serif; font-size: 0.92rem; font-weight: 800;
+      color: var(--text);
+    }
+    .stat-val.green  { color: var(--success); }
+    .stat-val.purple { background: var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .stat-lbl { font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
+
+    /* ══════════════ PAINEL DIREITO ══════════════ */
+    .right {
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 60px; background: #fff; position: relative;
+      overflow: hidden;
+    }
+    .right::before {
+      content: ''; position: absolute;
+      width: 300px; height: 300px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(224,29,142,0.05) 0%, transparent 70%);
+      top: -80px; right: -80px; pointer-events: none;
+    }
+    .right::after {
+      content: ''; position: absolute;
+      width: 200px; height: 200px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(139,92,246,0.06) 0%, transparent 70%);
+      bottom: -60px; left: -60px; pointer-events: none;
+    }
+
+    .card {
+      width: 100%; max-width: 390px; position: relative; z-index: 1;
+      animation: slideInRight 0.7s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(28px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    /* logo mobile */
+    .card-logo { display: none; }
+
+    .card-eyebrow {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--pink); margin-bottom: 6px;
+      transition: all 0.3s;
+    }
+    .card-title {
+      font-family: 'Outfit', sans-serif; font-size: 1.6rem; font-weight: 900;
+      color: var(--text); margin-bottom: 4px; line-height: 1.2;
+      transition: all 0.3s;
+    }
+    .card-sub {
+      font-size: 0.82rem; color: var(--muted); margin-bottom: 24px; line-height: 1.6;
+      transition: all 0.3s;
+    }
+
+    /* Google */
+    .btn-google {
+      width: 100%; padding: 12px 18px; border-radius: 12px;
+      border: 1.5px solid var(--border); background: #fff;
+      color: var(--text); font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s, transform 0.15s;
+      margin-bottom: 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      position: relative; overflow: hidden;
+    }
+    .btn-google::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(224,29,142,0.04), rgba(139,92,246,0.04));
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .btn-google:hover { border-color: #c4b5fd; box-shadow: 0 4px 16px rgba(139,92,246,0.12); transform: translateY(-1px); }
+    .btn-google:hover::after { opacity: 1; }
+    .btn-google:active { transform: scale(0.99); }
+    .g-icon { width: 18px; height: 18px; flex-shrink: 0; }
+    .g-spinner {
+      display: none; width: 16px; height: 16px;
+      border: 2px solid #e2e8f0; border-top-color: var(--pink);
+      border-radius: 50%; animation: spin 0.7s linear infinite;
+    }
+    .btn-google.loading .g-icon { display: none; }
+    .btn-google.loading .g-spinner { display: block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Divider */
+    .divider {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+    }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .divider span { font-size: 0.72rem; color: var(--muted); white-space: nowrap; }
+
+    /* ── Inputs linha ── */
+    .f-group { position: relative; margin-bottom: 20px; }
+    .f-group input {
+      width: 100%; padding: 10px 0 8px;
+      border: none; border-bottom: 1.5px solid var(--border);
+      border-radius: 0; font-size: 0.9rem; color: var(--text);
+      outline: none; font-family: 'Inter', sans-serif; background: transparent;
+      transition: border-color 0.25s;
+    }
+    .f-group input::placeholder { color: transparent; }
+    .f-group input:focus { border-bottom-color: var(--purple); }
+    .f-group label {
+      position: absolute; left: 0; top: 10px;
+      font-size: 0.875rem; color: var(--muted); pointer-events: none;
+      transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+    }
+    .f-group input:focus + label,
+    .f-group input:not(:placeholder-shown) + label {
+      top: -10px; font-size: 0.68rem; color: var(--purple); font-weight: 600;
+    }
+    /* linha animada */
+    .f-group::after {
+      content: ''; position: absolute; bottom: 0; left: 0;
+      width: 0; height: 1.5px; background: var(--grad);
+      transition: width 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    .f-group:focus-within::after { width: 100%; }
+
+    /* senha */
+    .pw-wrap { position: relative; margin-bottom: 6px; }
+    .pw-wrap input {
+      width: 100%; padding: 10px 30px 8px 0;
+      border: none; border-bottom: 1.5px solid var(--border);
+      border-radius: 0; font-size: 0.9rem; color: var(--text);
+      outline: none; font-family: 'Inter', sans-serif; background: transparent;
+      transition: border-color 0.25s;
+    }
+    .pw-wrap input::placeholder { color: transparent; }
+    .pw-wrap input:focus { border-bottom-color: var(--purple); }
+    .pw-wrap label {
+      position: absolute; left: 0; top: 10px;
+      font-size: 0.875rem; color: var(--muted); pointer-events: none;
+      transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+    }
+    .pw-wrap input:focus + label,
+    .pw-wrap input:not(:placeholder-shown) + label {
+      top: -10px; font-size: 0.68rem; color: var(--purple); font-weight: 600;
+    }
+    .pw-wrap::after {
+      content: ''; position: absolute; bottom: 0; left: 0;
+      width: 0; height: 1.5px; background: var(--grad);
+      transition: width 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    .pw-wrap:focus-within::after { width: 100%; }
+
+    /* ── Tela esqueceu senha ── */
+    .forgot-screen {
+      display: none; animation: fadeUp 0.3s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .forgot-screen.active { display: block; }
+    .main-screen { transition: opacity 0.2s; }
+    .main-screen.hidden { display: none; }
+
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.8rem; color: var(--muted); background: none; border: none;
+      cursor: pointer; padding: 0; margin-bottom: 24px;
+      transition: color 0.2s;
+    }
+    .back-btn:hover { color: var(--text); }
+    .back-btn svg { width: 14px; height: 14px; }
+
+    .forgot-title {
+      font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 900;
+      color: var(--text); margin-bottom: 6px;
+    }
+    .forgot-sub { font-size: 0.82rem; color: var(--muted); margin-bottom: 28px; line-height: 1.6; }
+
+    .forgot-success {
+      display: none; text-align: center; padding: 32px 0;
+      animation: fadeUp 0.4s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .forgot-success.active { display: block; }
+    .success-icon {
+      width: 56px; height: 56px; border-radius: 50%; margin: 0 auto 16px;
+      background: rgba(16,185,129,0.1); display: flex; align-items: center; justify-content: center;
+    }
+    .success-icon svg { width: 28px; height: 28px; stroke: var(--success); }
+    .forgot-success strong { display: block; font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+    .forgot-success span { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+    .pw-eye {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: var(--muted); padding: 4px; display: flex; transition: color 0.2s;
+    }
+    .pw-eye:hover { color: var(--text); }
+    .pw-eye svg { width: 16px; height: 16px; }
+
+    /* esqueceu */
+    .forgot-row {
+      display: flex; justify-content: flex-end;
+      margin-bottom: 18px; margin-top: 2px;
+      overflow: hidden; transition: max-height 0.3s, opacity 0.3s, margin 0.3s;
+      max-height: 30px;
+    }
+    .forgot-row.hidden { max-height: 0; opacity: 0; margin: 0; }
+    .forgot { font-size: 0.78rem; color: var(--purple); text-decoration: none; font-weight: 500; transition: opacity 0.2s; }
+    .forgot:hover { opacity: 0.7; }
+
+    /* Submit */
+    .btn-submit {
+      width: 100%; padding: 13px; border-radius: 12px; border: none;
+      background: var(--grad); color: #fff;
+      font-size: 0.875rem; font-weight: 700; letter-spacing: 0.04em;
+      cursor: pointer; margin-bottom: 16px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      position: relative; overflow: hidden;
+      box-shadow: 0 4px 18px rgba(224,29,142,0.35);
+      transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+    /* shimmer */
+    .btn-submit::before {
+      content: '';
+      position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+      transform: skewX(-20deg);
+      animation: shimmer 2.8s ease infinite;
+    }
+    @keyframes shimmer {
+      0%   { left: -100%; }
+      60%, 100% { left: 150%; }
+    }
+    .btn-submit:hover:not(:disabled) {
+      opacity: 0.93; transform: translateY(-1px);
+      box-shadow: 0 6px 26px rgba(224,29,142,0.45);
+    }
+    .btn-submit:active:not(:disabled) { transform: scale(0.99); }
+    .btn-submit:disabled { opacity: 0.55; cursor: not-allowed; }
+    .s-spinner {
+      display: none; width: 15px; height: 15px;
+      border: 2px solid rgba(255,255,255,0.35); border-top-color: #fff;
+      border-radius: 50%; animation: spin 0.7s linear infinite;
+    }
+    .btn-submit.loading .s-spinner { display: block; }
+    .btn-submit.loading #btn-label { opacity: 0.7; }
+
+    .toggle-row {
+      text-align: center; font-size: 0.8rem; color: var(--muted); margin-bottom: 14px;
+    }
+    .toggle-row a {
+      color: var(--pink); font-weight: 600; cursor: pointer; text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .toggle-row a:hover { opacity: 0.75; }
+
+    .terms {
+      font-size: 0.68rem; color: var(--muted); text-align: center; line-height: 1.6;
+    }
+    .terms a {
+      color: var(--subtle); text-decoration: none;
+      border-bottom: 1px solid var(--border); transition: color 0.2s;
+    }
+    .terms a:hover { color: var(--text); }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: var(--text); color: #fff; border-radius: 12px;
+      padding: 11px 20px; font-size: 0.82rem;
+      pointer-events: none; opacity: 0;
+      transition: opacity 0.25s, transform 0.25s; z-index: 9999;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.18); font-weight: 500;
+      white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.error   { background: #ef4444; }
+    .toast.success { background: var(--success); }
+
+    /* ── Logo no topo do form ── */
+    .card-logo {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 28px; text-decoration: none; width: fit-content;
+    }
+    .card-logo .lb {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: var(--grad);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 14px rgba(139,92,246,0.35);
+    }
+    .card-logo .lb img { width: 28px; height: 28px; object-fit: contain; filter: brightness(0) invert(1); }
+    .card-logo span {
+      font-family: 'Outfit', sans-serif; font-size: 1.2rem; font-weight: 800;
+      background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 900px) {
+      html, body { overflow-y: auto; }
+      .page { grid-template-columns: 1fr; height: auto; }
+      .left { display: none; }
+      .right { padding: 40px 28px; min-height: 100vh; align-items: flex-start; padding-top: 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ═══════ ESQUERDO ═══════ -->
+  <div class="left">
+    <div class="left-grid"></div>
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+
+    <!-- Logo topo esquerdo -->
+    <a href="login.html" class="left-logo">
+      <div class="lb-box"><img src="logo (2).png" alt="LB" onerror="this.style.display='none'"></div>
+      <span>Finance</span>
+    </a>
+
+    <div class="left-inner">
+
+      <h1>Controle total<br>das suas <span class="grad-text">finanças.</span></h1>
+      <p class="left-desc">Orçamentos inteligentes, metas automáticas e relatórios detalhados — tudo que você precisa para tomar decisões melhores com seu dinheiro.</p>
+
+      <!-- Budget card -->
+      <div class="budget-card-wrap">
+      <div class="budget-card" id="budget-card">
+        <div class="bc-header">
+          <div class="bc-title">
+            <svg width="14" height="14" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+            Orçamentos — Junho 2025
+          </div>
+          <div class="bc-tag">✓ No prazo</div>
+        </div>
+        <div class="b-rows">
+          <div class="b-row">
+            <div class="b-label">
+              <span>🍔 Alimentação</span>
+              <span style="color:#8b5cf6;">R$ 620 / R$ 800</span>
+            </div>
+            <div class="b-bar"><div class="b-fill bar1" style="background:linear-gradient(90deg,#e01d8e,#8b5cf6);"></div></div>
+          </div>
+          <div class="b-row">
+            <div class="b-label">
+              <span>🚗 Transporte</span>
+              <span style="color:#8b5cf6;">R$ 370 / R$ 400</span>
+            </div>
+            <div class="b-bar"><div class="b-fill bar2" style="background:linear-gradient(90deg,#e01d8e,#8b5cf6);"></div></div>
+          </div>
+          <div class="b-row">
+            <div class="b-label">
+              <span>🎬 Lazer</span>
+              <span style="color:#c084fc;">R$ 140 / R$ 300</span>
+            </div>
+            <div class="b-bar"><div class="b-fill bar3" style="background:linear-gradient(90deg,#e01d8e,#8b5cf6);"></div></div>
+          </div>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-pill">
+            <div class="stat-val green">87%</div>
+            <div class="stat-lbl">Economizam mais</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-val purple">R$4.2M</div>
+            <div class="stat-lbl">Movimentados</div>
+          </div>
+          <div class="stat-pill">
+            <div class="stat-val" style="color:#fbbf24;">4.9 ★</div>
+            <div class="stat-lbl">Avaliação média</div>
+          </div>
+        </div>
+      </div>
+      </div><!-- /budget-card-wrap -->
+
+    </div>
+  </div>
+
+  <!-- ═══════ DIREITO ═══════ -->
+  <div class="right">
+    <div class="card">
+
+      <!-- ── Tela principal ── -->
+      <div class="main-screen" id="main-screen">
+        <div class="card-eyebrow" id="form-eyebrow">Acesso seguro</div>
+        <div class="card-title"   id="form-title">Bem-vindo de volta</div>
+        <div class="card-sub"    id="form-sub">Entre e retome o controle das suas finanças.</div>
+
+        <button class="btn-google" id="btn-google" onclick="handleGoogle()">
+          <div class="g-spinner"></div>
+          <svg class="g-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          <span id="google-txt">Continuar com Google</span>
+        </button>
+
+        <div class="divider"><span>ou entre com e-mail</span></div>
+
+        <div id="signup-fields" style="display: none;">
+          <div class="f-group">
+            <input type="text" id="fullName" placeholder=" " autocomplete="name">
+            <label for="fullName">Nome completo</label>
+          </div>
+          <div class="f-group">
+            <input type="text" id="cpf" placeholder=" " maxlength="14">
+            <label for="cpf">CPF</label>
+          </div>
+          <div class="f-group">
+            <input type="text" id="phone" placeholder=" " maxlength="15">
+            <label for="phone">Celular</label>
+          </div>
+        </div>
+
+        <div class="f-group">
+          <input type="email" id="email" placeholder=" " autocomplete="email">
+          <label for="email">E-mail</label>
+        </div>
+
+        <div class="pw-wrap">
+          <input type="password" id="password" placeholder=" " autocomplete="current-password">
+          <label for="password">Senha</label>
+          <button type="button" class="pw-eye" onclick="togglePw()" aria-label="Ver senha">
+            <svg id="eye-icon" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="forgot-row" id="forgot-row">
+          <a href="#" class="forgot" onclick="openForgot(event)">Esqueceu sua senha?</a>
+        </div>
+
+        <button class="btn-submit" id="btn-submit" onclick="handleAuth()">
+          <div class="s-spinner"></div>
+          <span id="btn-label">ENTRAR</span>
+        </button>
+
+        <div class="toggle-row">
+          <span id="toggle-text">Não tem conta?</span>
+          <a id="toggle-link" onclick="toggleMode()"> Cadastre-se grátis</a>
+        </div>
+
+        <div class="terms">
+          Ao entrar você concorda com os
+          <a href="#">Termos de Uso</a> e a <a href="#">Política de Privacidade</a>.
+        </div>
+      </div>
+
+      <!-- ── Tela esqueceu senha ── -->
+      <div class="forgot-screen" id="forgot-screen">
+        <button class="back-btn" onclick="closeForgot()">
+          <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"/></svg>
+          Voltar
+        </button>
+
+        <div id="forgot-form-wrap">
+          <div class="forgot-title">Redefinir senha</div>
+          <div class="forgot-sub">Digite seu e-mail e enviaremos um link para você criar uma nova senha.</div>
+
+          <div class="f-group">
+            <input type="email" id="forgot-email" placeholder=" " autocomplete="email">
+            <label for="forgot-email">E-mail cadastrado</label>
+          </div>
+
+          <button class="btn-submit" id="btn-forgot-submit" onclick="handleForgot()">
+            <div class="s-spinner"></div>
+            <span>ENVIAR LINK</span>
+          </button>
+        </div>
+
+        <div class="forgot-success" id="forgot-success">
+          <div class="success-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg>
+          </div>
+          <strong>Link enviado!</strong>
+          <span>Verifique sua caixa de entrada.<br>O link expira em 1 hora.</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ── Supabase ──
+  const SUPABASE_URL = 'https://ijaztxvquuhmcscylgzo.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlqYXp0eHZxdXVobWNzY3lsZ3pvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0NDk2NjksImV4cCI6MjA5MjAyNTY2OX0.sJDBshc0xFK21jukhdxi461z_loQDR509wOY-nrK514';
+  const _sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  window.addEventListener('DOMContentLoaded', async () => {
+    const { data: { session } } = await _sb.auth.getSession();
+    if (session) { window.location.href = 'index.html'; return; }
+
+    // ── Tilt 3D no card ──
+    const card = document.getElementById('budget-card');
+    const wrap = card.parentElement;
+    wrap.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const x = e.clientX - r.left;
+      const y = e.clientY - r.top;
+      const rx = ((y / r.height) - 0.5) * -16;
+      const ry = ((x / r.width)  - 0.5) *  16;
+      card.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) scale(1.02)`;
+    });
+    wrap.addEventListener('mouseleave', () => {
+      card.style.transform = 'rotateX(0deg) rotateY(0deg) scale(1)';
+    });
+
+    // Mascaras
+    const cpfInput = document.getElementById('cpf');
+    if(cpfInput) {
+        cpfInput.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 11) value = value.slice(0, 11);
+            if (value.length > 9) value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+            else if (value.length > 6) value = value.replace(/(\d{3})(\d{3})(\d{3})/, '$1.$2.$3');
+            else if (value.length > 3) value = value.replace(/(\d{3})(\d{3})/, '$1.$2');
+            e.target.value = value;
+        });
+    }
+
+    const phoneInput = document.getElementById('phone');
+    if(phoneInput) {
+        phoneInput.addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 11) value = value.slice(0, 11);
+            if (value.length > 10) value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+            else if (value.length > 2) value = value.replace(/(\d{2})(\d{4,5})/, '($1) $2');
+            e.target.value = value;
+        });
+    }
+  });
+
+  // ── Toggle login / cadastro ──
+  let isSignUp = false;
+  function toggleMode() {
+    isSignUp = !isSignUp;
+    const anim = (id, txt) => {
+      const el = document.getElementById(id);
+      el.style.opacity = '0'; el.style.transform = 'translateY(6px)';
+      setTimeout(() => {
+        el.textContent = txt;
+        el.style.transition = 'opacity 0.25s, transform 0.25s';
+        el.style.opacity = '1'; el.style.transform = 'translateY(0)';
+      }, 160);
+    };
+    anim('form-eyebrow', isSignUp ? 'Criar conta grátis' : 'Acesso seguro');
+    anim('form-title',   isSignUp ? 'Crie sua conta'      : 'Bem-vindo de volta');
+    anim('form-sub',     isSignUp
+      ? 'Comece gratuitamente. Sem cartão de crédito.'
+      : 'Entre e retome o controle das suas finanças.');
+    anim('btn-label',    isSignUp ? 'CRIAR CONTA' : 'ENTRAR');
+    anim('toggle-text',  isSignUp ? 'Já tem conta?' : 'Não tem conta?');
+    anim('toggle-link',  isSignUp ? ' Fazer login'  : ' Cadastre-se grátis');
+    document.getElementById('google-txt').textContent = isSignUp ? 'Cadastrar com Google' : 'Continuar com Google';
+    document.getElementById('forgot-row').classList.toggle('hidden', isSignUp);
+    document.getElementById('password').autocomplete = isSignUp ? 'new-password' : 'current-password';
+    document.getElementById('signup-fields').style.display = isSignUp ? 'block' : 'none';
+  }
+
+  // ── Google OAuth ──
+  async function handleGoogle() {
+    const btn = document.getElementById('btn-google');
+    btn.classList.add('loading'); btn.disabled = true;
+    const { error } = await _sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: 'https://lbfinance-7ku.pages.dev/index.html',
+        queryParams: { access_type: 'offline', prompt: 'consent' }
+      }
+    });
+    if (error) {
+      showToast('Erro com Google: ' + error.message, 'error');
+      btn.classList.remove('loading'); btn.disabled = false;
+    }
+  }
+
+  // ── Auth email/senha ──
+  async function handleAuth() {
+    const email = document.getElementById('email').value.trim();
+    const pwd   = document.getElementById('password').value;
+    const name  = document.getElementById('fullName') ? document.getElementById('fullName').value.trim() : '';
+    const cpf   = document.getElementById('cpf') ? document.getElementById('cpf').value.trim() : '';
+    const phone = document.getElementById('phone') ? document.getElementById('phone').value.trim() : '';
+    const btn   = document.getElementById('btn-submit');
+    
+    if (!email || !pwd) { showToast('Preencha e-mail e senha.', 'error'); return; }
+    
+    if (isSignUp) {
+      if (!name || !cpf || !phone) { showToast('Preencha todos os dados pessoais.', 'error'); return; }
+      if (cpf.length < 14) { showToast('CPF inválido.', 'error'); return; }
+      if (pwd.length < 6) { showToast('Senha mínima de 6 caracteres.', 'error'); return; }
+    }
+
+    btn.classList.add('loading'); btn.disabled = true;
+    try {
+      if (isSignUp) {
+        const { error } = await _sb.auth.signUp({ 
+            email, 
+            password: pwd,
+            options: {
+                data: {
+                    full_name: name,
+                    cpf: cpf,
+                    phone: phone
+                }
+            }
+        });
+        if (error) throw error;
+        showToast('Conta criada! Confirme seu e-mail.', 'success');
+      } else {
+        const { error } = await _sb.auth.signInWithPassword({ email, password: pwd });
+        if (error) throw error;
+        showToast('Login realizado! Redirecionando...', 'success');
+        setTimeout(() => { window.location.href = 'index.html'; }, 800);
+      }
+    } catch (err) {
+      const msgs = {
+        'Invalid login credentials':  'E-mail ou senha incorretos.',
+        'Email not confirmed':         'Confirme seu e-mail antes de entrar.',
+        'User already registered':     'E-mail já cadastrado. Faça login.',
+        'Password should be at least 6 characters': 'Senha mínima de 6 caracteres.',
+      };
+      showToast(msgs[err.message] || err.message, 'error');
+    } finally {
+      btn.classList.remove('loading'); btn.disabled = false;
+    }
+  }
+
+  // ── Esqueceu senha — navegação ──
+  function openForgot(e) {
+    e.preventDefault();
+    const pre = document.getElementById('email').value.trim();
+    if (pre) document.getElementById('forgot-email').value = pre;
+    document.getElementById('main-screen').classList.add('hidden');
+    document.getElementById('forgot-screen').classList.add('active');
+    document.getElementById('forgot-success').classList.remove('active');
+    document.getElementById('forgot-form-wrap').style.display = 'block';
+  }
+  function closeForgot() {
+    document.getElementById('forgot-screen').classList.remove('active');
+    document.getElementById('main-screen').classList.remove('hidden');
+  }
+  async function handleForgot() {
+    const email = document.getElementById('forgot-email').value.trim();
+    const btn   = document.getElementById('btn-forgot-submit');
+    if (!email) { showToast('Digite seu e-mail.', 'error'); return; }
+    btn.classList.add('loading'); btn.disabled = true;
+    const { error } = await _sb.auth.resetPasswordForEmail(email, {
+      redirectTo: 'https://lbfinance-7ku.pages.dev/reset-password.html'
+    });
+    btn.classList.remove('loading'); btn.disabled = false;
+    if (error) { showToast(error.message, 'error'); return; }
+    document.getElementById('forgot-form-wrap').style.display = 'none';
+    document.getElementById('forgot-success').classList.add('active');
+  }
+
+  // ── Toggle senha ──
+  function togglePw() {
+    const inp = document.getElementById('password');
+    const ico = document.getElementById('eye-icon');
+    const show = inp.type === 'password';
+    inp.type = show ? 'text' : 'password';
+    ico.innerHTML = show
+      ? `<path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>`
+      : `<path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>`;
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Enter') handleAuth(); });
+
+  let toastTimer;
+  function showToast(msg, type = '') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show' + (type ? ' ' + type : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { t.className = 'toast'; }, 3500);
+  }
+</script>
+
+</body>
+</html>

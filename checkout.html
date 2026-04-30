@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout Seguro - LB Finance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="checkout-page">
+    
+    <!-- Background Elements -->
+    <div class="bg-glow glow-1"></div>
+    <div class="bg-glow glow-2"></div>
+
+    <!-- Minimalist Navbar -->
+    <nav class="navbar checkout-nav" style="background: transparent; border-bottom: none; padding-top: 30px;">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; max-width: 1000px; margin: 0 auto;">
+            <a href="index.html" class="logo" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+                <div style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #e01d8e 0%, #8b5cf6 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(139,92,246,0.3);">
+                    <img src="logo (2).png" alt="LB" style="width: 28px; height: 28px; object-fit: contain; filter: brightness(0) invert(1);" onerror="this.src='logo_b64.txt'">
+                </div>
+                <span style="font-weight: 900; font-size: 1.7rem; font-family: 'Outfit', sans-serif; letter-spacing: -0.5px; background: linear-gradient(135deg, #e01d8e 0%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Finance</span>
+            </a>
+            <div class="security-badge">
+                <i class="fa-solid fa-lock"></i>
+                <span>Ambiente 100% Seguro</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Checkout Main Content -->
+    <main class="checkout-container container">
+        <div class="checkout-grid">
+            
+            <!-- Left Column: Order Summary -->
+            <aside class="checkout-summary reveal">
+                <div class="summary-card dark-card-mockup">
+                    <div class="badge-feature">ASSINATURA PREMIUM</div>
+                    <h2 class="summary-title">Plano Pro</h2>
+                    <div class="summary-price">
+                        R$ <span class="amount">9,99</span><span class="period">/mês</span>
+                    </div>
+                    
+                    <ul class="summary-benefits">
+                        <li><i class="fa-solid fa-check"></i> Controle Financeiro Ilimitado</li>
+                        <li><i class="fa-solid fa-check"></i> Relatórios Avançados e Gráficos</li>
+                        <li><i class="fa-solid fa-check"></i> Suporte Prioritário</li>
+                        <li><i class="fa-solid fa-check"></i> Gestão de Investimentos</li>
+                        <li><i class="fa-solid fa-check"></i> Cancele quando quiser</li>
+                    </ul>
+
+                    <div class="summary-guarantee">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <div>
+                            <strong>Garantia de 7 dias</strong>
+                            <p>Se não gostar, devolvemos seu dinheiro. Sem perguntas.</p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Right Column: Payment Form -->
+            <section class="checkout-form-section reveal delay-100">
+                <div class="form-wrapper">
+                    <h3>Finalizar Assinatura</h3>
+                    <p class="form-subtitle">Preencha seus dados para liberar seu acesso instantâneo.</p>
+
+                    <form id="paymentForm" class="payment-form">
+                        
+                        <!-- Payment Info -->
+                        <div class="form-section payment-methods-section">
+                            <h4 class="fs-title"><i class="fa-solid fa-credit-card"></i> Pagamento</h4>
+                            
+                            <!-- Tabs (Visual only, credit card selected) -->
+                            <div class="payment-tabs">
+                                <div class="ptab active">
+                                    <i class="fa-solid fa-credit-card"></i> Cartão de Crédito
+                                </div>
+                            </div>
+
+                            <div class="credit-card-form">
+                                <div class="input-group">
+                                    <label for="cardNumber">Número do Cartão</label>
+                                    <div class="input-with-icon">
+                                        <i class="fa-brands fa-cc-visa card-brand-icon" id="cardBrandIcon"></i>
+                                        <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="cardName">Nome no Cartão</label>
+                                    <input type="text" id="cardName" placeholder="Como impresso no cartão" required>
+                                </div>
+                                
+                                <div class="input-row">
+                                    <div class="input-group">
+                                        <label for="cardExpiry">Validade</label>
+                                        <input type="text" id="cardExpiry" placeholder="MM/AA" maxlength="5" required>
+                                    </div>
+                                    <div class="input-group">
+                                        <label for="cardCvv">CVV</label>
+                                        <div class="input-with-icon">
+                                            <input type="text" id="cardCvv" placeholder="123" maxlength="4" required>
+                                            <i class="fa-solid fa-circle-question" title="Código de 3 ou 4 dígitos no verso do cartão"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Area -->
+                        <div class="submit-area">
+                            <div id="errorMessage" class="error-message"></div>
+                            
+                            <button type="submit" id="submitBtn" class="btn btn-primary btn-block">
+                                <i class="fa-solid fa-lock"></i> Assinar Agora
+                            </button>
+                            
+                            <p class="terms-text">
+                                Ao assinar, você concorda com nossos <a href="#">Termos de Uso</a> e <a href="#">Políticas de Privacidade</a>.
+                            </p>
+                            
+                            <div class="safe-checkout-logos">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Mastercard_2019_logo.svg/800px-Mastercard_2019_logo.svg.png" alt="Mastercard">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" alt="Visa">
+                                <span>Powered by <strong style="color: #0050FF;">asaas</strong></span>
+                            </div>
+                        </div>
+                        
+                    </form>
+                </div>
+            </section>
+            
+        </div>
+    </main>
+
+    <!-- Success Modal (Hidden by default) -->
+    <div id="successModal" class="modal-overlay">
+        <div class="modal-content reveal scale-up">
+            <div class="success-icon">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <h2>Assinatura Confirmada!</h2>
+            <p>Seja bem-vindo(a) ao Plano Pro da LB Finance. Seu acesso já está liberado.</p>
+            <a href="index.html" class="btn btn-primary">Ir para o Dashboard</a>
+        </div>
+    </div>
+
+    <script src="checkout.js"></script>
+</body>
+</html>
