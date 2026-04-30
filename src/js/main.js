@@ -1,4 +1,9 @@
+import { appState } from './appState.js';
 import './subscription-ux.js';
+
+// --- INICIALIZAÇÃO GLOBAL ---
+window.appState = appState;
+console.log('App State carregado:', appState);
 
 // ── DIAGNÓSTICO GLOBAL DE ERROS ──
         window.onerror = function (msg, url, line, col, error) {
