@@ -80,7 +80,7 @@ console.log('App State carregado:', appState);
         });
 
         // ── STATE ──
-        const _cachedPlan = JSON.parse(localStorage.getItem('lb_plan_cache') || '{}');
+
         Object.assign(appState, {
             user: { id: null, name: '', email: '', cpf: '', phone: '', status: 'Starter' },
             smartAlertShown: false,
@@ -111,8 +111,7 @@ console.log('App State carregado:', appState);
             paymentMethod: null,
         });
 
-        const ICONS_SET = ["🍔", "🚗", "🏠", "💊", "🎮", "📚", "👕", "🛒", "💻", "💰", "✈️", "🎵", "📈", "💼", "🎁", "🌟", "🏋️", "☕", "🎯", "🔧"];
-        const COLORS_SET = ["var(--accent)", "var(--accent-2)", "#A855F7", "#C084FC", "#DC2626", "#059669", "#EA580C", "#4B5563"];
+
 
         let selIcon = ICONS_SET[0], selColor = COLORS_SET[0];
         let accSelColor = COLORS_SET[0];
@@ -442,7 +441,7 @@ console.log('App State carregado:', appState);
                         // Inicia polling automático após abrir o link
                         _startPaymentPolling();
                     }, 700);
-                });
+                };
 
                 if (data.paymentUrl) {
                     openPayment(data.paymentUrl);
@@ -568,7 +567,7 @@ console.log('App State carregado:', appState);
                     overdue:   { bg:'rgba(245,158,11,0.15)', color:'#fbbf24', border:'rgba(251,191,36,0.3)' },
                     cancelled: { bg:'rgba(239,68,68,0.12)',  color:'#f87171', border:'rgba(248,113,113,0.3)' },
                     inactive:  { bg:'rgba(255,255,255,0.1)', color:'rgba(255,255,255,0.6)', border:'rgba(255,255,255,0.2)' },
-                });
+                };
                 const s = styles[status] || styles.inactive;
                 badgeEl.style.background = s.bg;
                 badgeEl.style.color      = s.color;
@@ -887,7 +886,7 @@ console.log('App State carregado:', appState);
                     console.error(`Falha inesperada ao tentar acessar a tabela '${tableName}':`, e);
                     return null;
                 }
-            });
+            };
 
             // 1. Perfil (Individual)
             const profile = await safeFetch('profiles', _supabase.from('profiles').select('*').eq('id', appState.user.id).single());
@@ -1002,7 +1001,7 @@ console.log('App State carregado:', appState);
                 const safeRun = (fnName) => {
                     try { if (typeof window[fnName] === 'function') window[fnName](); }
                     catch (e) { console.warn('Falha em ' + fnName, e); }
-                });
+                };
 
                 populateMonthFilters();
                 safeRun('renderSettingsAccounts');
@@ -1026,7 +1025,7 @@ console.log('App State carregado:', appState);
                 full_name: document.getElementById('cfg-name').value,
                 cpf: document.getElementById('cfg-cpf').value,
                 phone: document.getElementById('cfg-phone').value
-            });
+            };
             const { error } = await _supabase.from('profiles').upsert(updates);
             if (error) return showToast('Erro ao salvar perfil!', 'error');
             appState.user.name = updates.full_name;
@@ -1295,7 +1294,7 @@ console.log('App State carregado:', appState);
                         button.textContent = optEl.text;
                         closeMenu();
                         el.dispatchEvent(new Event('change'));
-                    });
+                    };
                     menu.appendChild(opt);
                 });
             }
@@ -1322,7 +1321,7 @@ console.log('App State carregado:', appState);
             button.onclick = (e) => {
                 e.stopPropagation();
                 container.classList.contains('open') ? closeMenu() : openMenu();
-            });
+            };
 
             // Sincroniza o texto do botão quando o select muda por JS
             el.addEventListener('change', () => {
@@ -1836,7 +1835,7 @@ console.log('App State carregado:', appState);
                     <div style="font-family:'Outfit',sans-serif; font-weight:800; font-size:1rem; color:${color};">${type === 'income' ? '+' : '-'} ${fmtBRL(total)}</div>
                 </div>`;
                 }).join('');
-            });
+            };
 
             const incH = renderList('income');
             const expH = renderList('expense');
@@ -2138,7 +2137,7 @@ console.log('App State carregado:', appState);
                     type: appState.quickEntryType,
                     regime: 'Variável',
                     occurrence: 'Única'
-                });
+                };
                 const { error } = await _supabase.from('transactions').insert(tx);
                 if (error) throw error;
 
@@ -2323,7 +2322,7 @@ console.log('App State carregado:', appState);
                         regime: appState.entryRegime,
                         occurrence: appState.entryOccurrence,
                         goal_id: appState.currentEntryType === 'goal' ? document.getElementById('e-goal').value : null
-                    });
+                    };
 
                     if (appState.currentEntryType === 'goal' && !tx.goal_id) {
                         btn.disabled = false;
@@ -2350,7 +2349,7 @@ console.log('App State carregado:', appState);
                             account: accName,
                             type: appState.currentEntryType,
                             active: true
-                        });
+                        };
                         await _supabase.from('recurring').insert(recObj);
                     }
                 }
@@ -2487,7 +2486,7 @@ console.log('App State carregado:', appState);
                 type: appState.currentRecType,
                 end_date: endDate,
                 active: true
-            });
+            };
 
 
             let result;
@@ -2549,7 +2548,7 @@ console.log('App State carregado:', appState);
                 type: recObj.type,
                 regime: 'Fixo',
                 occurrence: 'Única'
-            });
+            };
 
             const { error } = await _supabase.from('transactions').insert(tx);
             if (!error) {
@@ -2580,7 +2579,7 @@ console.log('App State carregado:', appState);
                     user_id: appState.user.id, date: todayStr, val: r.amount,
                     category: r.category, account: r.account,
                     description: `Recorrente: ${r.name}`, type: r.type, regime: 'Fixo', occurrence: 'Única'
-                });
+                };
                 const { error } = await _supabase.from('transactions').insert(tx);
                 if (!error) {
                     await syncAllData();
@@ -2688,7 +2687,7 @@ console.log('App State carregado:', appState);
                     </div>
                 </div>`;
                 }).join('');
-            });
+            };
 
             renderItems(ativas, activeList);
             renderItems(pausadas, pausedList);
@@ -3194,7 +3193,7 @@ console.log('App State carregado:', appState);
                         activeFlippedCard = null;
                     }
                 }, 3500);
-            });
+            };
 
             // Vira o primeiro card quase que imediatamente (2 seg) após entrar na aba
             setTimeout(() => {
@@ -3644,7 +3643,7 @@ console.log('App State carregado:', appState);
                 card_id: card.id,
                 invoice_month: _currentInvoiceMonth,
                 is_invoice_payment: true
-            });
+            };
 
             // ── Atualização OTIMISTA: aplica localmente antes do round-trip pro servidor ──
             const tempId = 'tmp-' + Date.now();
@@ -4183,7 +4182,7 @@ console.log('App State carregado:', appState);
                 btn.onclick = () => {
                     if (onConfirmCallback) onConfirmCallback();
                     closeConfirmModal();
-                });
+                };
             }
         });
 
@@ -4339,7 +4338,7 @@ console.log('App State carregado:', appState);
                 icon: selIcon,
                 color: selColor,
                 status: 'active'
-            });
+            };
 
             try {
                 if (appState.editingGoalIndex !== null) {
@@ -4614,7 +4613,7 @@ console.log('App State carregado:', appState);
                     type: 'income',
                     regime: 'Variável',
                     occurrence: 'Única'
-                });
+                };
                 await _supabase.from('transactions').insert([tx]);
                 await _supabase.from('goals').update({ status: 'redeemed' }).eq('id', id);
                 closeRedeemConfirmModal();
@@ -4754,7 +4753,7 @@ console.log('App State carregado:', appState);
                     renderBudgetTab();
                     showToast('Limite atualizado!');
                 }
-            });
+            };
 
             input.onblur = saveLimit;
             input.onkeydown = (e) => { if (e.key === 'Enter') saveLimit(); };
@@ -4781,7 +4780,7 @@ console.log('App State carregado:', appState);
             backgroundColor: '#020117', titleColor: '#fff', bodyColor: '#9B8FFF',
             borderColor: 'rgba(78,60,250,0.3)', borderWidth: 1, padding: 12,
             cornerRadius: 10, displayColors: true, boxWidth: 10, boxHeight: 10
-        });
+        };
 
         function setReportsView(view) {
             appState.reportsView = view;
@@ -4835,14 +4834,14 @@ console.log('App State carregado:', appState);
                 return {
                     text: `${sign}${Math.abs(diff).toFixed(1)}% vs mês anterior`,
                     cls: Math.abs(diff) < 0.05 ? 'trend-flat' : (positive ? 'trend-up' : 'trend-down')
-                });
-            });
+                };
+            };
             const applyTrend = (id, t) => {
                 const el = document.getElementById(id);
                 if (!el) return;
                 el.innerText = t.text;
                 el.className = 'stat-footer ' + t.cls;
-            });
+            };
             applyTrend('r-income-trend', trend(inc, incPrev, true));
             applyTrend('r-expense-trend', trend(exp, expPrev, false));
             applyTrend('r-balance-trend', trend(bal, incPrev - expPrev, true));
@@ -5230,7 +5229,7 @@ console.log('App State carregado:', appState);
                 sb.classList.remove('mobile-open');
             }
             return originalSwitchTab(id);
-        });
+        };
 
         // ── COMPARISON ──
         let cChart;
@@ -5250,7 +5249,7 @@ console.log('App State carregado:', appState);
                 const inc = txs.filter(t => t.type === 'income' && !t.is_invoice_payment).reduce((s, t) => s + Number(t.val), 0);
                 const exp = txs.filter(t => t.type === 'expense' && !t.is_invoice_payment).reduce((s, t) => s + Number(t.val), 0);
                 return { inc, exp, bal: inc - exp, txs };
-            });
+            };
 
             const sumA = getSummary(yA, mA);
             const sumB = getSummary(yB, mB);
@@ -5403,7 +5402,7 @@ console.log('App State carregado:', appState);
             const PRICE_IDS = {
                 pro: 'price_PRO_999_PLACEHOLDER',
                 business: 'price_BUSINESS_2499_PLACEHOLDER'
-            });
+            };
 
             const priceId = PRICE_IDS[planId];
             const priceLabel = planId === 'pro' ? 'R$ 9,99' : 'R$ 24,99';
@@ -5501,7 +5500,7 @@ console.log('App State carregado:', appState);
                                 price: q.regularMarketPrice || 0,
                                 change: q.regularMarketChangePercent || 0,
                                 name: q.shortName || q.longName || q.symbol
-                            });
+                            };
                             found++;
                         }
                     });
@@ -5635,7 +5634,7 @@ console.log('App State carregado:', appState);
                     return {
                         date: inv.purchase_date ? new Date(inv.purchase_date).getTime() : Date.now(),
                         amount: (inv.quantity || 1) * (inv.purchase_price || 0)
-                    });
+                    };
                 }).sort(function (a, b) { return a.date - b.date; });
 
                 // Build labels and data points
@@ -6322,7 +6321,7 @@ console.log('App State carregado:', appState);
                     rate_index: fixed ? (document.getElementById('inv-f-rate-index').value || null) : null,
                     notes: (document.getElementById('inv-f-notes').value || '').trim() || null,
                     account_id: document.getElementById('inv-f-account').value || null
-                });
+                };
 
                 // Validação de saldo: só para novos ativos com conta selecionada
                 var isNovoAtivo = !appState.editingInvId;
@@ -6407,7 +6406,7 @@ console.log('App State carregado:', appState);
                     document.getElementById('iar-' + _iaCurrent)?.classList.remove('open');
                     _iaCurrent = null;
                 }
-            });
+            };
 
             // ─── Botões inline por conta de investimento ───
             var _icaCurrent = null;
@@ -6657,7 +6656,7 @@ console.log('App State carregado:', appState);
                     institution: (document.getElementById('inv-conta-institution').value || '').trim() || null,
                     type: document.getElementById('inv-conta-type').value,
                     color: _invContaSelColor
-                });
+                };
                 try {
                     if (appState.editingInvContaId) {
                         await _supabase.from('investment_accounts').update(record).eq('id', appState.editingInvContaId);
@@ -7008,7 +7007,7 @@ console.log('App State carregado:', appState);
                     transfer: { icon: '↔️', label: 'Transferência', cls: 'transfer', sign: '+' },
                     provento: { icon: '💰', label: 'Provento',    cls: 'provento', sign: '+' },
                     compra:   { icon: '📈', label: 'Compra',      cls: 'compra',   sign: '-' }
-                });
+                };
 
                 // Monta itens combinados
                 var items = [];
@@ -7222,6 +7221,7 @@ console.log('App State carregado:', appState);
             window.openSaldoDetalheModal = openSaldoDetalheModal;
             window.closeSaldoDetalheModal = closeSaldoDetalheModal;
             window.renderSaldoDetalhe = renderSaldoDetalhe;
+            window.fmtPct             = fmtPct;
 
             console.log('[INV] Funções expostas globalmente');
         })();
@@ -7577,7 +7577,7 @@ console.log('App State carregado:', appState);
                     link:    c.data.url?.startsWith('http') ? c.data.url : 'https://reddit.com' + c.data.permalink,
                     author:  c.data.subreddit_name_prefixed || 'Reddit',
                     pubDate: new Date(c.data.created_utc * 1000).toISOString(),
-                });
+                };
             }
             function redditFilter(c) {
                 return !c.data.stickied && c.data.title.length > 20 && c.kind === 't3';
@@ -8026,91 +8026,11 @@ window.toggleSidebar = toggleSidebar;
 window.toggleMobileMenu = toggleMobileMenu;
 window.renderComparisonTab = renderComparisonTab;
 window.handleSubscribe = handleSubscribe;
-window.fmtBRL = fmtBRL;
-window.fmtPct = fmtPct;
-window.esc = esc;
-window.setText = setText;
-window.setClass = setClass;
-window.setVal = setVal;
-window.todayISO = todayISO;
-window.fetchCDI = fetchCDI;
-window.getBrapiToken = getBrapiToken;
-window.fetchCotacoes = fetchCotacoes;
-window.setBrapiToken = setBrapiToken;
-window.syncInvestimentos = syncInvestimentos;
-window.calcSaldoContas = calcSaldoContas;
-window.calcSaldoContasFiltered = calcSaldoContasFiltered;
-window.fetchCDIHistory = fetchCDIHistory;
-window.renderRentabilidadeChart = renderRentabilidadeChart;
-window.calcDivsForInv = calcDivsForInv;
-window.calcTotalDivs = calcTotalDivs;
-window.calcValue = calcValue;
-window.renderInvestimentosTab = renderInvestimentosTab;
-window.renderKPIs = renderKPIs;
-window.renderContasRow = renderContasRow;
-window.renderCharts = renderCharts;
-window.makeChart = makeChart;
-window.renderTable = renderTable;
-window.updateCDIBadge = updateCDIBadge;
-window.refreshInvCotacoes = refreshInvCotacoes;
-window.setRentabPeriod = setRentabPeriod;
-window.filterInvByType = filterInvByType;
-window.filterInvByConta = filterInvByConta;
-window.openInvModal = openInvModal;
-window.setInvType = setInvType;
-window.calcTotalInvestido = calcTotalInvestido;
-window.buscarCotacaoTicker = buscarCotacaoTicker;
-window.closeInvModal = closeInvModal;
-window.saveInvestimento = saveInvestimento;
-window.editInvestimento = editInvestimento;
-window.closeMenu = closeMenu;
-window.cacheGet = cacheGet;
-window.cacheSet = cacheSet;
-window.fetchBCB = fetchBCB;
-window.fmt = fmt;
-window.trendBadge = trendBadge;
-window.relTime = relTime;
-window.renderIndicadoresTab = renderIndicadoresTab;
-window.animateCountUp = animateCountUp;
-window.step = step;
-window.showMarqueeSkeletons = showMarqueeSkeletons;
-window.buildMarquee = buildMarquee;
-window.showFundamentalsSkeletons = showFundamentalsSkeletons;
-window.mc = mc;
-window.buildFundamentals = buildFundamentals;
-window.renderNoticiasTab = renderNoticiasTab;
-window.tFetch = tFetch;
-window.redditMap = redditMap;
-window.redditFilter = redditFilter;
-window.loadBrasil = loadBrasil;
-window.loadGlobal = loadGlobal;
-window.translateTitle = translateTitle;
-window.patchTranslations = patchTranslations;
-window.catPill = catPill;
-window.showNewsSkeletons = showNewsSkeletons;
-window.renderNewsList = renderNewsList;
-window.saveProfileData = saveProfileData;
 
 
 
 
-// EXPORTACOES GLOBAIS
-window.toggleNavGroup = toggleNavGroup;
-window.switchTab = switchTab;
-window.openPlanModal = openPlanModal;
-window.toggleAuthMode = toggleAuthMode;
-window.handleAuthAction = handleAuthAction;
-window.logout = logout;
-window.openTransactionModal = openTransactionModal;
-window.togglePlanCycle = togglePlanCycle;
-window.openCheckoutModal = openCheckoutModal;
-window.submitCheckout = submitCheckout;
-window.maskCPF = maskCPF;
-window.maskPhone = maskPhone;
-window.triggerPlanSync = triggerPlanSync;
-window.toggleSidebar = toggleSidebar;
-window.appState = appState;
-window._supabase = _supabase;
+// LOGICA DE STARTUP FINAL
 
 // --- LOGICA DE STARTUP FINAL ---
 async function startupApp() {
@@ -8568,9 +8488,9 @@ window.openPaymentMethodModal  = openPaymentMethodModal;
 window.closePaymentMethodModal = closePaymentMethodModal;
 window.loadPaymentMethod       = loadPaymentMethod;
 window._renderPaymentDisplay   = _renderPaymentDisplay;
+window._renderUsageGrid        = _renderUsageGrid;
+window._renderInvoiceRows      = _renderInvoiceRows;
+window.startupApp              = startupApp;
+window.saveProfileData         = saveProfileData;
 
-// EXPORTACOES GLOBAIS SUBSCRIPTION
-window.updateSubscriptionUI = updateSubscriptionUI;
-window._renderUsageGrid = _renderUsageGrid;
-window._renderFeaturesGrid = _renderFeaturesGrid;
-window._renderInvoices = _renderInvoices;
+
