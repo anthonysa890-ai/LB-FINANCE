@@ -8103,3 +8103,6 @@ window.maskCPF = maskCPF;
 window.maskPhone = maskPhone;
 window.triggerPlanSync = triggerPlanSync;
 window.toggleSidebar = toggleSidebar;
+
+window.appState = appState;
+window._supabase = _supabase;
