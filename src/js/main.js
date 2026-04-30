@@ -11,12 +11,12 @@ console.log('App State carregado:', appState);
                 showToast('Erro de Sistema: ' + msg + ' (Linha: ' + line + ')', 'error');
             }
             return false;
-        });
+        };
         window.onunhandledrejection = function (event) {
             if (typeof showToast === 'function') {
                 showToast('Erro de Promessa: ' + (event.reason || 'desconhecido'), 'error');
             }
-        });
+        };
 
         // ── SUPABASE ──
         const SUPABASE_URL = 'https://ijaztxvquuhmcscylgzo.supabase.co';
@@ -8026,44 +8026,6 @@ window.buscarCotacaoTicker = buscarCotacaoTicker;
 window.closeInvModal = closeInvModal;
 window.saveInvestimento = saveInvestimento;
 window.editInvestimento = editInvestimento;
-window.toggleInvActions = toggleInvActions;
-window.toggleContaActions = toggleContaActions;
-window.deleteInvestimento = deleteInvestimento;
-window.closeDeleteInvModal = closeDeleteInvModal;
-window.confirmDeleteInvestimento = confirmDeleteInvestimento;
-window.calcVendaTotal = calcVendaTotal;
-window.openVendaModal = openVendaModal;
-window.closeVendaModal = closeVendaModal;
-window.saveVenda = saveVenda;
-window.openInvContaModal = openInvContaModal;
-window.editInvConta = editInvConta;
-window.selectInvContaColor = selectInvContaColor;
-window.closeInvContaModal = closeInvContaModal;
-window.saveInvConta = saveInvConta;
-window.deleteInvConta = deleteInvConta;
-window.openDividendoModal = openDividendoModal;
-window.closeDividendoModal = closeDividendoModal;
-window.calcDivTotal = calcDivTotal;
-window.saveDividendo = saveDividendo;
-window.openAporteModal = openAporteModal;
-window.closeAporteModal = closeAporteModal;
-window.saveAporte = saveAporte;
-window.openTransferModal = openTransferModal;
-window.closeTransferModal = closeTransferModal;
-window.saveTransfer = saveTransfer;
-window.openContaHistoryModal = openContaHistoryModal;
-window.closeContaHistoryModal = closeContaHistoryModal;
-window.toggleContaHistPeriod = toggleContaHistPeriod;
-window.setContaHistPeriod = setContaHistPeriod;
-window.setContaHistPeriodRelative = setContaHistPeriodRelative;
-window.renderContaHistory = renderContaHistory;
-window.deleteInvAccountEvent = deleteInvAccountEvent;
-window.openSaldoDetalheModal = openSaldoDetalheModal;
-window.closeSaldoDetalheModal = closeSaldoDetalheModal;
-window.renderSaldoDetalhe = renderSaldoDetalhe;
-window.toggleMovMenu = toggleMovMenu;
-window.closeMenu = closeMenu;
-window.toggleRentabPeriodMenu = toggleRentabPeriodMenu;
 window.closeMenu = closeMenu;
 window.cacheGet = cacheGet;
 window.cacheSet = cacheSet;
@@ -8111,38 +8073,3 @@ window.toggleSidebar = toggleSidebar;
 
 window.appState = appState;
 window._supabase = _supabase;
-
-
-// --- PARTIDA DO APLICATIVO ---
-window.addEventListener('DOMContentLoaded', async () => {
-    console.log('Iniciando sistema...');
-    if (window._supabase) {
-        const { checkSession } = await import('./services/auth.js');
-        checkSession(window._supabase);
-        if (typeof checkInactivity === 'function') checkInactivity();
-    }
-});
-
-
-// --- LOGICA DE STARTUP FINAL ---
-async function startupApp() {
-    console.log('Iniciando LB Finance...');
-    if (window._supabase) {
-        try {
-            const { data: { session }, error } = await window._supabase.auth.getSession();
-            if (session) {
-                window.appState.user.id = session.user.id;
-                window.appState.user.email = session.user.email;
-                console.log('Sessao ativa para:', session.user.email);
-                if (typeof triggerPlanSync === 'function') triggerPlanSync();
-            } else {
-                console.warn('Nenhuma sessao encontrada, redirecionando...');
-                window.location.href = 'login.html';
-            }
-        } catch (e) {
-            console.error('Erro no startup:', e);
-        }
-    }
-}
-
-window.addEventListener('DOMContentLoaded', startupApp);
