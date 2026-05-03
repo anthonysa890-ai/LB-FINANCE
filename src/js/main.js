@@ -1984,19 +1984,26 @@ console.log('App State carregado:', appState);
 
         // ── ACCOUNTS ──
         function renderSettingsAccounts() {
-            document.getElementById('settings-acc-list').innerHTML = appState.accounts.map((acc, i) => `
-            <div class="acc-item">
-                <div class="acc-dot" style="background:${acc.color}; box-shadow:0 0 6px ${acc.color}60;"></div>
-                <div style="flex:1;">
-                    <div style="font-weight:700; font-size:0.875rem; color:var(--text-main);">${acc.name}</div>
-                    <div style="font-size:0.75rem; color:var(--text-muted);">Saldo: ${fmtBRL(Number(acc.balance))}</div>
-                </div>
-                <div style="display:flex; gap:8px;">
-                    <div class="icon-action" onclick="openAccModal(${i})"><i data-lucide="edit-2"></i></div>
-                    <div class="icon-action danger" onclick="deleteAcc(${i})"><i data-lucide="trash-2"></i></div>
-                </div>
-            </div>`).join('');
-            lucide.createIcons();
+            const settingsList = document.getElementById('settings-acc-list');
+            if (settingsList) {
+                settingsList.innerHTML = appState.accounts.map((acc, i) => `
+                <div class="acc-item">
+                    <div class="acc-dot" style="background:${acc.color}; box-shadow:0 0 6px ${acc.color}60;"></div>
+                    <div style="flex:1;">
+                        <div style="font-weight:700; font-size:0.875rem; color:var(--text-main);">${acc.name}</div>
+                        <div style="font-size:0.75rem; color:var(--text-muted);">Saldo: ${fmtBRL(Number(acc.balance))}</div>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <div class="icon-action" onclick="openAccModal(${i})"><i data-lucide="edit-2"></i></div>
+                        <div class="icon-action danger" onclick="deleteAcc(${i})"><i data-lucide="trash-2"></i></div>
+                    </div>
+                </div>`).join('');
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            }
+            const debitoSec = document.getElementById('cartoes-debito-section');
+            if (debitoSec && debitoSec.style.display !== 'none') {
+                renderDebitAccountsSection();
+            }
         }
 
         function openAccModal(index = null) {
@@ -2060,6 +2067,7 @@ console.log('App State carregado:', appState);
                     await syncAllData();
                     renderSettingsAccounts();
                     renderBankCards();
+                    renderDebitAccountsSection();
                     showToast('Conta removida.');
                 } catch (err) {
                     console.error('Erro ao excluir conta:', err);
@@ -3971,6 +3979,119 @@ console.log('App State carregado:', appState);
                     }
                 });
             });
+        }
+
+        function switchCardsView(view) {
+            const isCredito = view === 'credito';
+            const creditoSec = document.getElementById('cartoes-credito-section');
+            const debitoSec  = document.getElementById('cartoes-debito-section');
+            const btnCred    = document.getElementById('card-tab-credito');
+            const btnDeb     = document.getElementById('card-tab-debito');
+            const title      = document.getElementById('cartoes-tab-title');
+            const subtitle   = document.getElementById('cartoes-tab-subtitle');
+            const addBtn     = document.getElementById('cartoes-add-btn');
+
+            if (creditoSec) creditoSec.style.display = isCredito ? '' : 'none';
+            if (debitoSec)  debitoSec.style.display  = isCredito ? 'none' : '';
+            if (btnCred) btnCred.className = `toggle-btn${isCredito ? ' active' : ''}`;
+            if (btnDeb)  btnDeb.className  = `toggle-btn${!isCredito ? ' active' : ''}`;
+
+            if (isCredito) {
+                if (title)    title.textContent    = 'Cartões de Crédito';
+                if (subtitle) subtitle.textContent = 'Gerencie seus cartões, limites e faturas.';
+                if (addBtn) {
+                    addBtn.setAttribute('onclick', 'openCardModal()');
+                    addBtn.innerHTML = '<i data-lucide="plus"></i> Adicionar Cartão';
+                }
+            } else {
+                if (title)    title.textContent    = 'Contas de Débito';
+                if (subtitle) subtitle.textContent = 'Gerencie suas contas bancárias e saldos.';
+                if (addBtn) {
+                    addBtn.setAttribute('onclick', 'openAccModal()');
+                    addBtn.innerHTML = '<i data-lucide="plus"></i> Nova Conta';
+                }
+                renderDebitAccountsSection();
+            }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
+        function renderDebitAccountsSection() {
+            const grid = document.getElementById('debit-accounts-grid');
+            if (!grid) return;
+            const accounts = appState.accounts;
+            const totalBalance = accounts.reduce((s, a) => s + Number(a.balance), 0);
+
+            if (accounts.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column:1/-1;text-align:center;padding:64px 20px;">
+                        <div style="width:64px;height:64px;border-radius:18px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                            <i data-lucide="landmark" style="width:28px;height:28px;color:#d1d5db;"></i>
+                        </div>
+                        <div style="font-size:1rem;font-weight:700;color:var(--text-main);margin-bottom:6px;">Nenhuma conta cadastrada</div>
+                        <div style="font-size:0.82rem;color:var(--text-muted);margin-bottom:20px;">Adicione suas contas bancárias para controlar seus saldos.</div>
+                        <button class="btn btn-primary" onclick="openAccModal()"><i data-lucide="plus"></i> Adicionar Conta</button>
+                    </div>`;
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+                return;
+            }
+
+            grid.innerHTML = accounts.map((acc, i) => {
+                const bal    = Number(acc.balance);
+                const isNeg  = bal < 0;
+                const isCash = acc.name === 'Dinheiro Vivo';
+                const pct    = totalBalance !== 0 ? Math.abs((bal / totalBalance) * 100).toFixed(1) : '0.0';
+                return `
+                <div style="background:var(--bg-panel);border-radius:20px;border:1px solid var(--border);overflow:hidden;transition:box-shadow .2s,transform .2s;" onmouseenter="this.style.boxShadow='0 8px 32px rgba(0,0,0,0.08)';this.style.transform='translateY(-2px)'" onmouseleave="this.style.boxShadow='';this.style.transform=''">
+                    <div style="height:4px;background:${acc.color};"></div>
+                    <div style="padding:20px 22px;">
+                        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;">
+                            <div style="display:flex;align-items:center;gap:12px;">
+                                <div style="width:46px;height:46px;border-radius:13px;background:${acc.color}20;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                    <i data-lucide="${isCash ? 'wallet' : 'landmark'}" style="width:20px;height:20px;color:${acc.color};"></i>
+                                </div>
+                                <div>
+                                    <div style="font-size:0.95rem;font-weight:800;color:var(--text-main);">${acc.name}</div>
+                                    <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;">${isCash ? 'Dinheiro físico' : 'Conta bancária'}</div>
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:4px;margin-top:2px;">
+                                <button onclick="openAccModal(${i})" style="width:32px;height:32px;border:none;background:transparent;border-radius:8px;cursor:pointer;color:var(--text-muted);display:flex;align-items:center;justify-content:center;transition:background .15s;" onmouseenter="this.style.background='#f1f5f9'" onmouseleave="this.style.background='transparent'" title="Editar"><i data-lucide="pencil" style="width:14px;height:14px;"></i></button>
+                                <button onclick="deleteAcc(${i})" style="width:32px;height:32px;border:none;background:transparent;border-radius:8px;cursor:pointer;color:var(--text-muted);display:flex;align-items:center;justify-content:center;transition:all .15s;" onmouseenter="this.style.background='#fee2e2';this.style.color='#ef4444'" onmouseleave="this.style.background='transparent';this.style.color='var(--text-muted)'" title="Excluir"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+                            </div>
+                        </div>
+                        <div style="margin-bottom:16px;">
+                            <div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.8px;font-weight:700;color:var(--text-muted);margin-bottom:5px;">Saldo atual</div>
+                            <div style="font-size:1.9rem;font-weight:900;color:${isNeg ? 'var(--danger)' : 'var(--text-main)'};font-family:'Outfit',sans-serif;letter-spacing:-0.5px;">${fmtBRL(bal)}</div>
+                        </div>
+                        <div style="height:1px;background:var(--border);margin-bottom:14px;"></div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;">
+                            <span style="font-size:0.72rem;color:var(--text-muted);display:inline-flex;align-items:center;gap:5px;">
+                                <span style="width:6px;height:6px;border-radius:50%;background:${acc.color};display:inline-block;flex-shrink:0;"></span>
+                                ${isNeg ? 'Saldo negativo' : 'Saldo positivo'}
+                            </span>
+                            <span style="font-size:0.72rem;color:var(--text-muted);font-weight:600;">${pct}% do total</span>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('') + `
+            <div style="background:linear-gradient(135deg,var(--accent),var(--accent-2));border-radius:20px;padding:24px;position:relative;overflow:hidden;color:#fff;">
+                <div style="position:absolute;top:-24px;right:-24px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,0.07);"></div>
+                <div style="position:absolute;bottom:-36px;left:-12px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,0.04);"></div>
+                <div style="position:relative;z-index:1;">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+                        <div style="width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i data-lucide="piggy-bank" style="width:18px;height:18px;"></i>
+                        </div>
+                        <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.8px;font-weight:700;color:rgba(255,255,255,0.75);">Patrimônio total</div>
+                    </div>
+                    <div style="font-size:2rem;font-weight:900;font-family:'Outfit',sans-serif;letter-spacing:-0.5px;margin-bottom:4px;">${fmtBRL(totalBalance)}</div>
+                    <div style="font-size:0.75rem;color:rgba(255,255,255,0.65);margin-bottom:20px;">${accounts.length} conta${accounts.length !== 1 ? 's' : ''} cadastrada${accounts.length !== 1 ? 's' : ''}</div>
+                    <button onclick="openAccModal()" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:#fff;border-radius:10px;padding:8px 18px;font-size:0.78rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;backdrop-filter:blur(4px);transition:background .15s;font-family:'Inter',sans-serif;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+                        <i data-lucide="plus" style="width:14px;height:14px;"></i> Nova Conta
+                    </button>
+                </div>
+            </div>`;
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
 
         function toggleCardMenu(i) {
@@ -7996,6 +8117,8 @@ window.reverseInvoicePayment = reverseInvoicePayment;
 window.deleteCardTxFromInvoice = deleteCardTxFromInvoice;
 window.isCardTxOnPaidInvoice = isCardTxOnPaidInvoice;
 window.renderCardsTab = renderCardsTab;
+window.switchCardsView = switchCardsView;
+window.renderDebitAccountsSection = renderDebitAccountsSection;
 window.toggleCardMenu = toggleCardMenu;
 window.closecardMenu = closecardMenu;
 window.changeCardMonth = changeCardMonth;
