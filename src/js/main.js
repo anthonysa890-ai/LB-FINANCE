@@ -4732,7 +4732,7 @@ console.log('App State carregado:', appState);
             const alertBox = document.getElementById('budget-projection-alert');
 
             // Mostrar se consumiu > 80% ou se a projeção indica estouro
-            if ((consumedPct > 80 || projection > totalLimit) && totalLimit > 0) {
+            if ((consumedPct > 80 || (totalFixed + varProjection) > totalLimit) && totalLimit > 0) {
                 alertBox.style.display = 'block';
                 document.getElementById('projection-text').innerHTML = `Atenção! Você já consumiu <span style="color:var(--accent); font-weight:900;">${consumedPct.toFixed(0)}%</span> do seu orçamento total e ainda faltam <span style="font-weight:900;">${remainingDays} dias</span> para o mês acabar.`;
             } else {
