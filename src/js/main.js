@@ -8215,48 +8215,35 @@ window.addEventListener('DOMContentLoaded', startupApp);
 
 
 // --- LOGICA DE ASSINATURAS UNIFICADA ---
-// ═══════════════════════════════════════════════════
-//  subscription-ux.js — LB Finance
-//  Renderiza a aba Assinatura com dados do appState
-// ═══════════════════════════════════════════════════
 
-// ──────────────────────────────────────────────────
-// FUNÇÃO PRINCIPAL — chamada ao abrir a aba
-// ──────────────────────────────────────────────────
 function updateSubscriptionUI() {
-  const isPro   = appState.plan === 'pro';
-  const status  = appState.planStatus;  // 'active' | 'overdue' | 'cancelled' | 'inactive'
-  const cycle   = appState.planCycle;   // 'monthly' | 'yearly'
-  const endDate = appState.planEnd   ? new Date(appState.planEnd)   : null;
+  const isPro     = appState.plan === 'pro';
+  const status    = appState.planStatus;
+  const cycle     = appState.planCycle;
+  const endDate   = appState.planEnd   ? new Date(appState.planEnd)   : null;
   const startDate = appState.planStart ? new Date(appState.planStart) : null;
-
-  const fmtDate = (d) => d ? d.toLocaleDateString('pt-BR') : '—';
+  const fmtDate   = (d) => d ? d.toLocaleDateString('pt-BR') : '—';
+  const el        = (id) => document.getElementById(id);
 
   // ── HERO ──
-  const el = (id) => document.getElementById(id);
+  if (el('sub-hero-plan-name')) el('sub-hero-plan-name').textContent = isPro ? 'Pro' : 'Básico';
+  if (el('sub-hero-price'))     el('sub-hero-price').textContent     = isPro ? (cycle === 'yearly' ? 'R$ 99,99' : 'R$ 9,99') : 'Grátis';
+  if (el('sub-hero-cycle'))     el('sub-hero-cycle').textContent     = isPro ? (cycle === 'yearly' ? '/ ano' : '/ mês') : '';
+  if (el('sub-hero-btn-label')) el('sub-hero-btn-label').textContent = isPro ? 'Gerenciar plano' : 'Fazer upgrade →';
 
-  if (el('sub-hero-plan-name'))   el('sub-hero-plan-name').textContent  = isPro ? 'Pro' : 'Básico';
-  if (el('sub-hero-price'))       el('sub-hero-price').textContent       = isPro ? (cycle === 'yearly' ? 'R$ 99,99' : 'R$ 9,99') : 'Grátis';
-  if (el('sub-hero-cycle'))       el('sub-hero-cycle').textContent       = isPro ? (cycle === 'yearly' ? '/ ano' : '/ mês') : '';
-  if (el('sub-hero-btn-label'))   el('sub-hero-btn-label').textContent   = isPro ? 'Gerenciar plano' : 'Fazer upgrade →';
-
-  // Badge de status no hero
   const badge = el('sub-hero-status-badge');
   if (badge) {
-    const statusConfig = {
-      active:   { label: '● Ativo',       bg: 'rgba(16,185,129,0.18)', color: '#34d399', border: 'rgba(52,211,153,0.35)' },
-      overdue:  { label: '⚠ Em atraso',   bg: 'rgba(245,158,11,0.18)', color: '#fbbf24', border: 'rgba(251,191,36,0.35)' },
-      cancelled:{ label: '✕ Cancelado',   bg: 'rgba(239,68,68,0.15)',  color: '#f87171', border: 'rgba(248,113,113,0.35)' },
-      inactive: { label: 'Gratuito',       bg: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.7)', border: 'rgba(255,255,255,0.2)' },
+    const sc = {
+      active:   { label: '● Ativo',     bg: 'rgba(16,185,129,0.18)', color: '#34d399',              border: 'rgba(52,211,153,0.35)' },
+      overdue:  { label: '⚠ Em atraso', bg: 'rgba(245,158,11,0.18)', color: '#fbbf24',              border: 'rgba(251,191,36,0.35)' },
+      cancelled:{ label: '✕ Cancelado', bg: 'rgba(239,68,68,0.15)',  color: '#f87171',              border: 'rgba(248,113,113,0.35)' },
+      inactive: { label: 'Gratuito',    bg: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.7)', border: 'rgba(255,255,255,0.2)' },
     };
-    const cfg = statusConfig[status] || statusConfig.inactive;
-    badge.textContent       = cfg.label;
-    badge.style.background  = cfg.bg;
-    badge.style.color       = cfg.color;
-    badge.style.borderColor = cfg.border;
+    const cfg = sc[status] || sc.inactive;
+    badge.textContent = cfg.label; badge.style.background = cfg.bg;
+    badge.style.color = cfg.color; badge.style.borderColor = cfg.border;
   }
 
-  // Próxima cobrança no hero
   const renewalBox = el('sub-hero-renewal-box');
   if (renewalBox) {
     renewalBox.style.display = isPro && endDate ? '' : 'none';
@@ -8264,39 +8251,237 @@ function updateSubscriptionUI() {
   }
 
   // ── DETALHES DO PLANO ──
-  if (el('sub-info-start')) el('sub-info-start').textContent = fmtDate(startDate);
-  if (el('sub-info-end'))   el('sub-info-end').textContent   = fmtDate(endDate);
-  if (el('sub-info-cycle')) el('sub-info-cycle').textContent = isPro ? (cycle === 'yearly' ? 'Anual' : 'Mensal') : '—';
+  if (el('sub-info-start'))    el('sub-info-start').textContent   = fmtDate(startDate);
+  if (el('sub-info-end'))      el('sub-info-end').textContent     = fmtDate(endDate);
+  if (el('sub-info-cycle'))    el('sub-info-cycle').textContent   = isPro ? (cycle === 'yearly' ? 'Anual' : 'Mensal') : '—';
+  if (el('sub-info-plan-id'))  el('sub-info-plan-id').textContent = isPro ? 'PRO-' + (appState.user?.id || '').slice(0,8).toUpperCase() : 'BASIC';
 
   const statusEl = el('sub-info-status');
   if (statusEl) {
-    const sMap = {
-      active:   { label: 'Ativo',       color: '#059669', bg: '#ecfdf5', border: 'rgba(5,150,105,0.2)'   },
-      overdue:  { label: 'Em atraso',   color: '#d97706', bg: '#fffbeb', border: 'rgba(217,119,6,0.2)'   },
-      cancelled:{ label: 'Cancelado',   color: '#dc2626', bg: '#fef2f2', border: 'rgba(220,38,38,0.2)'   },
-      inactive: { label: 'Gratuito',    color: '#64748b', bg: '#f8fafc', border: 'rgba(100,116,139,0.2)' },
+    const sm = {
+      active:   { label: 'Ativo',     color: '#10b981', bg: 'rgba(16,185,129,0.1)',  border: 'rgba(16,185,129,0.25)' },
+      overdue:  { label: 'Em atraso', color: '#f59e0b', bg: 'rgba(245,158,11,0.1)',  border: 'rgba(245,158,11,0.25)' },
+      cancelled:{ label: 'Cancelado', color: '#ef4444', bg: 'rgba(239,68,68,0.1)',   border: 'rgba(239,68,68,0.25)'  },
+      inactive: { label: 'Gratuito',  color: 'var(--text-muted)', bg: 'var(--bg-deep)', border: 'var(--border)' },
     };
-    const s = sMap[status] || sMap.inactive;
-    statusEl.innerHTML       = `<span style="width:5px;height:5px;border-radius:50%;background:${s.color};display:inline-block;"></span> ${s.label}`;
-    statusEl.style.color     = s.color;
-    statusEl.style.background= s.bg;
-    statusEl.style.borderColor = s.border;
+    const s = sm[status] || sm.inactive;
+    statusEl.innerHTML = `<span style="width:5px;height:5px;border-radius:50%;background:${s.color};display:inline-block;flex-shrink:0;"></span> ${s.label}`;
+    statusEl.style.color = s.color; statusEl.style.background = s.bg; statusEl.style.border = `1px solid ${s.border}`;
   }
 
-  // Botão de cancelar — só visível para assinantes ativos
-  const cancelArea = el('sub-cancel-btn-area');
-  if (cancelArea) cancelArea.style.display = isPro ? '' : 'none';
+  if (el('sub-cancel-btn-area'))  el('sub-cancel-btn-area').style.display  = (isPro && status === 'active') ? '' : 'none';
+  if (el('sub-reactivate-area'))  el('sub-reactivate-area').style.display  = (status === 'cancelled') ? '' : 'none';
 
-  // ── USO DO PLANO ──
+  _renderSubAlerts(isPro, status, endDate, appState.paymentMethod);
+  _renderPlanBenefits(isPro);
   _renderUsageGrid(isPro);
-
-  // ── FORMA DE PAGAMENTO ──
+  _renderBillingCycle(isPro, cycle);
   _renderPaymentDisplay(isPro);
-
-  // ── FATURAS ──
   loadInvoicesFromASAAS(false);
 
   if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+// ── ALERTAS DINÂMICOS ──
+function _renderSubAlerts(isPro, status, endDate, paymentMethod) {
+  const section = document.getElementById('sub-alerts-section');
+  if (!section) return;
+  const alerts = [];
+  const today  = new Date();
+
+  if (status === 'overdue') {
+    alerts.push({ type: 'error', icon: 'alert-triangle', title: 'Pagamento pendente',
+      msg: 'Sua fatura está em atraso. Atualize seu método de pagamento para evitar a suspensão do serviço.',
+      action: { label: 'Ver pagamento', fn: 'openPaymentMethodModal()' } });
+  }
+
+  if (status === 'cancelled' && endDate && endDate > today) {
+    const days = Math.ceil((endDate - today) / 864e5);
+    alerts.push({ type: 'warning', icon: 'clock', title: 'Assinatura cancelada',
+      msg: `Você ainda tem acesso ao Pro por mais ${days} dia${days !== 1 ? 's' : ''}, até ${endDate.toLocaleDateString('pt-BR')}. Reative para não perder o acesso.`,
+      action: { label: 'Reativar assinatura', fn: 'reactivateSubscription(this)' } });
+  }
+
+  if (isPro && endDate && status === 'active') {
+    const days = Math.ceil((endDate - today) / 864e5);
+    if (days <= 7 && days > 0) {
+      alerts.push({ type: 'warning', icon: 'calendar-clock', title: 'Renovação em breve',
+        msg: `Sua assinatura renova em ${days} dia${days !== 1 ? 's' : ''} (${endDate.toLocaleDateString('pt-BR')}). Certifique-se de que o pagamento está atualizado.` });
+    }
+  }
+
+  if (paymentMethod?.creditCard?.creditCardExpiry) {
+    const [m, y] = (paymentMethod.creditCard.creditCardExpiry || '').split('/');
+    if (m && y) {
+      const expDate  = new Date(2000 + parseInt(y), parseInt(m) - 1, 1);
+      const daysLeft = Math.ceil((expDate - today) / 864e5);
+      if (daysLeft <= 60 && daysLeft > 0) {
+        alerts.push({ type: 'warning', icon: 'credit-card', title: 'Cartão prestes a vencer',
+          msg: `Seu cartão de crédito vence em ${paymentMethod.creditCard.creditCardExpiry}. Atualize-o para evitar falhas no pagamento.`,
+          action: { label: 'Ver pagamento', fn: 'openPaymentMethodModal()' } });
+      }
+    }
+  }
+
+  if (!alerts.length) { section.innerHTML = ''; section.style.marginBottom = '0'; return; }
+  section.style.marginBottom = '20px';
+
+  const cmap = {
+    error:   { bg: 'rgba(239,68,68,0.08)',  border: 'rgba(239,68,68,0.25)',  icon: '#ef4444', text: '#ef4444' },
+    warning: { bg: 'rgba(245,158,11,0.08)', border: 'rgba(245,158,11,0.25)', icon: '#f59e0b', text: '#f59e0b' },
+    info:    { bg: 'rgba(var(--accent-2-rgb),0.08)', border: 'rgba(var(--accent-2-rgb),0.2)', icon: 'var(--accent-2)', text: 'var(--accent-2)' },
+  };
+
+  section.innerHTML = alerts.map(a => {
+    const c = cmap[a.type] || cmap.info;
+    return `<div style="display:flex;align-items:flex-start;gap:14px;padding:16px 20px;border-radius:14px;background:${c.bg};border:1px solid ${c.border};">
+      <div style="width:34px;height:34px;border-radius:9px;background:${c.bg};border:1px solid ${c.border};display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
+        <i data-lucide="${a.icon}" style="width:16px;height:16px;color:${c.icon};"></i>
+      </div>
+      <div style="flex:1;">
+        <div style="font-size:0.83rem;font-weight:800;color:${c.text};margin-bottom:4px;">${a.title}</div>
+        <div style="font-size:0.78rem;color:var(--text-sub);line-height:1.6;">${a.msg}</div>
+        ${a.action ? `<button onclick="${a.action.fn}" style="margin-top:10px;padding:6px 16px;background:${c.bg};border:1.5px solid ${c.border};color:${c.text};border-radius:20px;font-size:0.74rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">${a.action.label}</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+// ── BENEFÍCIOS DO PLANO ──
+function _renderPlanBenefits(isPro) {
+  const el = document.getElementById('sub-plan-benefits');
+  if (!el) return;
+
+  const proFeatures = [
+    { icon: 'trending-up',  label: 'Carteira de Investimentos',    sub: 'Ações, FIIs, cripto e mais' },
+    { icon: 'activity',     label: 'Indicadores Econômicos',        sub: 'SELIC, CDI, IPCA em tempo real' },
+    { icon: 'newspaper',    label: 'Notícias Financeiras',          sub: 'Curadoria de mercado atualizada' },
+    { icon: 'infinity',     label: 'Lançamentos Ilimitados',        sub: 'Sem limite de transações mensais' },
+    { icon: 'tag',          label: 'Categorias Ilimitadas',         sub: 'Organize como quiser' },
+    { icon: 'target',       label: 'Metas & Sonhos',                sub: 'Planeje seus objetivos financeiros' },
+    { icon: 'bar-chart-2',  label: 'Relatórios Avançados',          sub: 'Análises detalhadas do seu dinheiro' },
+    { icon: 'headphones',   label: 'Suporte Prioritário',           sub: 'Atendimento dedicado' },
+  ];
+
+  const basicIncludes = [
+    { icon: 'repeat',      label: 'Até 40 lançamentos por mês' },
+    { icon: 'tag',         label: 'Até 7 categorias' },
+    { icon: 'landmark',    label: 'Contas bancárias ilimitadas' },
+    { icon: 'credit-card', label: 'Controle de cartões de crédito' },
+    { icon: 'pie-chart',   label: 'Orçamento mensal' },
+  ];
+
+  if (isPro) {
+    el.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">
+      ${proFeatures.map(f => `
+        <div style="display:flex;align-items:flex-start;gap:10px;padding:14px;border-radius:12px;background:var(--bg-deep);border:1px solid var(--border);">
+          <div style="width:32px;height:32px;border-radius:8px;background:rgba(16,185,129,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i data-lucide="${f.icon}" style="width:14px;height:14px;color:#10b981;"></i>
+          </div>
+          <div>
+            <div style="font-size:0.8rem;font-weight:700;color:var(--text-main);">${f.label}</div>
+            <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;">${f.sub}</div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+  } else {
+    el.innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+      <div>
+        <div style="font-size:0.68rem;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Incluído no seu plano</div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          ${basicIncludes.map(f => `
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="width:22px;height:22px;border-radius:6px;background:rgba(16,185,129,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i data-lucide="check" style="width:12px;height:12px;color:#10b981;"></i>
+              </div>
+              <span style="font-size:0.8rem;color:var(--text-main);">${f.label}</span>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div>
+        <div style="font-size:0.68rem;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Disponível no Pro</div>
+        <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:16px;">
+          ${proFeatures.slice(0,5).map(f => `
+            <div style="display:flex;align-items:center;gap:10px;opacity:0.55;">
+              <div style="width:22px;height:22px;border-radius:6px;background:var(--bg-deep);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <i data-lucide="lock" style="width:11px;height:11px;color:var(--text-muted);"></i>
+              </div>
+              <span style="font-size:0.8rem;color:var(--text-sub);">${f.label}</span>
+            </div>`).join('')}
+        </div>
+        <button onclick="openPlanModal()" style="width:100%;padding:11px;background:var(--primary-gradient);color:#fff;border:none;border-radius:11px;font-size:0.82rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">
+          Fazer Upgrade para Pro →
+        </button>
+      </div>
+    </div>`;
+  }
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+// ── CICLO DE COBRANÇA ──
+function _renderBillingCycle(isPro, cycle) {
+  const section = document.getElementById('sub-billing-cycle-section');
+  const body    = document.getElementById('sub-billing-cycle-body');
+  if (!section || !body) return;
+  section.style.display = isPro ? '' : 'none';
+  if (!isPro) return;
+
+  const isMonthly = cycle !== 'yearly';
+  body.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
+      <div style="border-radius:14px;border:2px solid ${isMonthly ? 'var(--accent-2)' : 'var(--border)'};padding:18px 20px;background:${isMonthly ? 'rgba(var(--accent-2-rgb),0.06)' : 'var(--bg-deep)'};cursor:pointer;transition:all .2s;" onclick="_confirmCycleChange('monthly')">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <span style="font-size:0.78rem;font-weight:800;color:var(--text-main);">Mensal</span>
+          ${isMonthly ? `<span style="font-size:0.62rem;font-weight:800;padding:2px 8px;border-radius:20px;background:rgba(var(--accent-2-rgb),0.15);color:var(--accent-2);">Atual</span>` : ''}
+        </div>
+        <div style="font-size:1.4rem;font-weight:900;color:var(--text-main);font-family:'Outfit',sans-serif;">R$ 9,99</div>
+        <div style="font-size:0.7rem;color:var(--text-muted);margin-top:3px;">cobrado mensalmente</div>
+      </div>
+      <div style="border-radius:14px;border:2px solid ${!isMonthly ? 'var(--accent-2)' : 'var(--border)'};padding:18px 20px;background:${!isMonthly ? 'rgba(var(--accent-2-rgb),0.06)' : 'var(--bg-deep)'};cursor:pointer;transition:all .2s;position:relative;overflow:hidden;" onclick="_confirmCycleChange('yearly')">
+        <div style="position:absolute;top:0;right:12px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-size:0.6rem;font-weight:800;padding:3px 10px;border-radius:0 0 8px 8px;">Economize ~17%</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          <span style="font-size:0.78rem;font-weight:800;color:var(--text-main);">Anual</span>
+          ${!isMonthly ? `<span style="font-size:0.62rem;font-weight:800;padding:2px 8px;border-radius:20px;background:rgba(var(--accent-2-rgb),0.15);color:var(--accent-2);">Atual</span>` : ''}
+        </div>
+        <div style="font-size:1.4rem;font-weight:900;color:var(--text-main);font-family:'Outfit',sans-serif;">R$ 99,99</div>
+        <div style="font-size:0.7rem;color:var(--text-muted);margin-top:3px;">cobrado anualmente</div>
+      </div>
+    </div>
+    <div style="font-size:0.74rem;color:var(--text-muted);line-height:1.6;display:flex;align-items:flex-start;gap:6px;">
+      <i data-lucide="info" style="width:13px;height:13px;flex-shrink:0;margin-top:1px;"></i>
+      A mudança de ciclo entra em vigor na próxima renovação. Para migrar para anual, um novo link de pagamento será gerado.
+    </div>`;
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function _confirmCycleChange(newCycle) {
+  if (newCycle === appState.planCycle) return;
+  const label = newCycle === 'yearly' ? 'anual (R$ 99,99/ano)' : 'mensal (R$ 9,99/mês)';
+  if (!confirm(`Deseja mudar para o ciclo ${label}? Você será redirecionado para um novo link de pagamento.`)) return;
+  openPlanModal();
+}
+
+async function reactivateSubscription(btn) {
+  if (!confirm('Deseja reativar sua assinatura Pro?')) return;
+  const origHTML = btn?.innerHTML || '';
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i data-lucide="loader" style="width:13px;height:13px;animation:spin 1s linear infinite;display:inline-block;"></i> Aguarde...'; if (typeof lucide !== 'undefined') lucide.createIcons(); }
+  try {
+    const { data: { session } } = await _supabase.auth.getSession();
+    const res  = await fetch(`${SUPABASE_FN}/reactivate-subscription`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` }
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erro ao reativar');
+    showToast('Assinatura reativada com sucesso!', 'success');
+    await _syncPlanFromASAAS(false).catch(() => {});
+  } catch (e) {
+    showToast('Para reativar, faça uma nova assinatura.', 'info');
+    openPlanModal();
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = origHTML; if (typeof lucide !== 'undefined') lucide.createIcons(); }
+  }
 }
 
 // ──────────────────────────────────────────────────
@@ -8322,22 +8507,22 @@ function _renderUsageGrid(isPro) {
     const pct      = max ? Math.min(100, Math.round(val / max * 100)) : 0;
     const atLimit  = max && val >= max;
     const nearLimit= !atLimit && pct > 75;
-    const barColor = atLimit ? '#ef4444' : nearLimit ? '#f59e0b' : '#7c3aed';
+    const barColor = atLimit ? '#ef4444' : nearLimit ? '#f59e0b' : 'var(--accent-2)';
 
     return `
       <div>
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-          <div style="width:34px;height:34px;border-radius:9px;background:${atLimit ? '#fef2f2' : '#ede9fe'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <i data-lucide="${icon}" style="width:15px;height:15px;color:${atLimit ? '#ef4444' : '#7c3aed'};"></i>
+          <div style="width:34px;height:34px;border-radius:9px;background:${atLimit ? 'rgba(239,68,68,0.1)' : 'var(--accent-light)'};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i data-lucide="${icon}" style="width:15px;height:15px;color:${atLimit ? '#ef4444' : 'var(--accent)'};"></i>
           </div>
           <div>
-            <div style="font-size:0.82rem;font-weight:800;color:#1e293b;">${label}</div>
-            <div style="font-size:0.68rem;color:#94a3b8;">${sub}</div>
+            <div style="font-size:0.82rem;font-weight:800;color:var(--text-main);">${label}</div>
+            <div style="font-size:0.68rem;color:var(--text-muted);">${sub}</div>
           </div>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
-          <span style="font-size:1.3rem;font-weight:900;color:${atLimit ? '#ef4444' : '#1e293b'};font-family:'Outfit',sans-serif;">${val}</span>
-          <span style="font-size:0.75rem;font-weight:600;color:#94a3b8;">${max ? `de ${max}` : '∞ ilimitado'}</span>
+          <span style="font-size:1.3rem;font-weight:900;color:${atLimit ? '#ef4444' : 'var(--text-main)'};font-family:'Outfit',sans-serif;">${val}</span>
+          <span style="font-size:0.75rem;font-weight:600;color:var(--text-muted);">${max ? `de ${max}` : '∞ ilimitado'}</span>
         </div>
         ${max ? `
         <div style="height:6px;background:#f1f5f9;border-radius:10px;overflow:hidden;">
@@ -8378,41 +8563,48 @@ function _renderPaymentDisplay(isPro) {
   if (!pm) {
     el.innerHTML = `
       <div style="display:flex;align-items:flex-start;gap:10px;padding:4px 0;">
-        <i data-lucide="help-circle" style="width:20px;height:20px;color:#cbd5e1;flex-shrink:0;margin-top:2px;"></i>
+        <i data-lucide="help-circle" style="width:20px;height:20px;color:var(--text-muted);flex-shrink:0;margin-top:2px;"></i>
         <div>
-          <div style="font-size:0.9rem;font-weight:700;color:#475569;">Pagamento via PIX ou Boleto</div>
-          <div style="font-size:0.75rem;color:#94a3b8;margin-top:4px;line-height:1.5;">Não há cartão de crédito associado.<br>Para alterar, entre em contato com o suporte.</div>
+          <div style="font-size:0.9rem;font-weight:700;color:var(--text-sub);">Pagamento via PIX ou Boleto</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px;line-height:1.5;">Não há cartão de crédito associado.<br>Para alterar, entre em contato com o suporte.</div>
         </div>
       </div>`;
     if (typeof lucide !== 'undefined') lucide.createIcons();
     return;
   }
 
-  const iCard = pm.billingType === 'CREDIT_CARD' || pm.billingType === 'DEBIT_CARD';
+  const iCard      = pm.billingType === 'CREDIT_CARD' || pm.billingType === 'DEBIT_CARD';
   const typeLabels = { PIX: 'PIX', BOLETO: 'Boleto Bancário', CREDIT_CARD: 'Cartão de Crédito', DEBIT_CARD: 'Cartão de Débito' };
   const typeIcons  = { PIX: 'qr-code', BOLETO: 'file-text', CREDIT_CARD: 'credit-card', DEBIT_CARD: 'credit-card' };
-  const icon  = typeIcons[pm.billingType]  || 'credit-card';
+  const icon  = typeIcons[pm.billingType] || 'credit-card';
   const label = typeLabels[pm.billingType] || pm.billingType || 'Desconhecido';
   const last4 = pm.creditCard?.creditCardNumber || '';
   const brand = pm.creditCard?.creditCardBrand  || '';
   const exp   = pm.creditCard?.creditCardExpiry || '';
+  const holder= pm.creditCard?.creditCardHolderName || '';
 
   if (iCard && last4) {
     el.innerHTML = `
-      <div style="display:flex;align-items:flex-start;gap:12px;padding:4px 0;">
-        <i data-lucide="${icon}" style="width:22px;height:22px;color:#7c3aed;flex-shrink:0;margin-top:3px;"></i>
-        <div>
-          <div style="font-size:1.1rem;font-weight:900;color:#1e293b;font-family:'Outfit',sans-serif;letter-spacing:3px;margin-bottom:6px;">•••• •••• •••• ${last4}</div>
-          <div style="font-size:0.8rem;color:#64748b;font-weight:500;">${brand ? brand + ' · ' : ''}${exp ? 'Expira em ' + exp : ''}</div>
+      <div style="background:var(--bg-deep);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <i data-lucide="${icon}" style="width:20px;height:20px;color:var(--accent-2);flex-shrink:0;"></i>
+          <span style="font-size:0.75rem;font-weight:700;color:var(--text-muted);">${label}</span>
+        </div>
+        <div style="font-size:1.1rem;font-weight:900;color:var(--text-main);font-family:'Outfit',sans-serif;letter-spacing:3px;margin-bottom:8px;">•••• •••• •••• ${last4}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:0.75rem;color:var(--text-sub);font-weight:600;">${holder || brand}</span>
+          ${exp ? `<span style="font-size:0.72rem;color:var(--text-muted);">Expira ${exp}</span>` : ''}
         </div>
       </div>`;
   } else {
     el.innerHTML = `
-      <div style="display:flex;align-items:center;gap:10px;padding:4px 0;">
-        <i data-lucide="${icon}" style="width:22px;height:22px;color:#7c3aed;flex-shrink:0;"></i>
+      <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg-deep);border:1px solid var(--border);border-radius:12px;">
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i data-lucide="${icon}" style="width:18px;height:18px;color:var(--accent);"></i>
+        </div>
         <div>
-          <div style="font-size:0.95rem;font-weight:800;color:#1e293b;">${label}</div>
-          <div style="font-size:0.75rem;color:#94a3b8;margin-top:3px;">Método de pagamento ativo</div>
+          <div style="font-size:0.9rem;font-weight:800;color:var(--text-main);">${label}</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:2px;">Método de pagamento ativo</div>
         </div>
       </div>`;
   }
@@ -8431,12 +8623,12 @@ async function loadInvoicesFromASAAS(forceRefresh) {
       <tr>
         <td colspan="5" style="padding:48px;text-align:center;">
           <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
-            <div style="width:48px;height:48px;border-radius:14px;background:#f8fafc;display:flex;align-items:center;justify-content:center;">
-              <i data-lucide="receipt" style="width:22px;height:22px;color:#cbd5e1;"></i>
+            <div style="width:48px;height:48px;border-radius:14px;background:var(--bg-deep);display:flex;align-items:center;justify-content:center;">
+              <i data-lucide="receipt" style="width:22px;height:22px;color:var(--text-muted);"></i>
             </div>
-            <div style="font-size:0.9rem;font-weight:700;color:#94a3b8;">Nenhuma fatura disponível</div>
-            <div style="font-size:0.78rem;color:#cbd5e1;max-width:260px;text-align:center;line-height:1.6;">Faça upgrade para o Pro e acompanhe todo o histórico de cobranças aqui.</div>
-            <button onclick="openPlanModal()" style="padding:9px 22px;background:linear-gradient(135deg,#5b21b6,#7c3aed);color:#fff;border:none;border-radius:11px;font-size:0.8rem;font-weight:700;cursor:pointer;margin-top:4px;">Ver planos Pro →</button>
+            <div style="font-size:0.9rem;font-weight:700;color:var(--text-sub);">Nenhuma fatura disponível</div>
+            <div style="font-size:0.78rem;color:var(--text-muted);max-width:260px;text-align:center;line-height:1.6;">Faça upgrade para o Pro e acompanhe todo o histórico de cobranças aqui.</div>
+            <button onclick="openPlanModal()" style="padding:9px 22px;background:var(--primary-gradient);color:#fff;border:none;border-radius:11px;font-size:0.8rem;font-weight:700;cursor:pointer;margin-top:4px;">Ver planos Pro →</button>
           </div>
         </td>
       </tr>`;
@@ -8446,7 +8638,7 @@ async function loadInvoicesFromASAAS(forceRefresh) {
 
   tbody.innerHTML = `
     <tr>
-      <td colspan="5" style="padding:40px;text-align:center;color:#94a3b8;font-size:0.85rem;">
+      <td colspan="5" style="padding:40px;text-align:center;color:var(--text-muted);font-size:0.85rem;">
         <i data-lucide="loader" style="width:14px;height:14px;animation:spin 1s linear infinite;display:inline-block;vertical-align:middle;margin-right:6px;"></i>
         Carregando faturas...
       </td>
@@ -8468,11 +8660,11 @@ async function loadInvoicesFromASAAS(forceRefresh) {
     tbody.innerHTML = `
       <tr>
         <td colspan="5" style="padding:40px;text-align:center;">
-          <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
-            <i data-lucide="wifi-off" style="width:24px;height:24px;color:#cbd5e1;"></i>
-            <div style="font-size:0.85rem;font-weight:700;color:#94a3b8;">Histórico indisponível no momento</div>
-            <div style="font-size:0.75rem;color:#cbd5e1;text-align:center;max-width:280px;line-height:1.5;">A Edge Function <code>get-invoices</code> precisa ser configurada no Supabase para buscar as cobranças do Asaas.</div>
-            <button onclick="loadInvoicesFromASAAS(true)" style="margin-top:8px;padding:7px 18px;border:1.5px solid #e2e8f0;background:#fff;color:#64748b;border-radius:20px;font-size:0.75rem;font-weight:700;cursor:pointer;">Tentar novamente</button>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+            <i data-lucide="wifi-off" style="width:28px;height:28px;color:var(--text-muted);"></i>
+            <div style="font-size:0.85rem;font-weight:700;color:var(--text-sub);">Histórico indisponível no momento</div>
+            <div style="font-size:0.75rem;color:var(--text-muted);text-align:center;max-width:280px;line-height:1.5;">Verifique a configuração da Edge Function <code>get-invoices</code> no Supabase.</div>
+            <button onclick="loadInvoicesFromASAAS(true)" class="btn btn-ghost" style="margin-top:4px;font-size:0.75rem;">Tentar novamente</button>
           </div>
         </td>
       </tr>`;
@@ -8485,16 +8677,16 @@ function _renderInvoiceRows(invoices) {
   if (!tbody) return;
 
   if (!invoices.length) {
-    tbody.innerHTML = `<tr><td colspan="5" style="padding:40px;text-align:center;color:#94a3b8;font-size:0.85rem;">Nenhuma cobrança encontrada no histórico.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5" style="padding:40px;text-align:center;color:var(--text-muted);font-size:0.85rem;">Nenhuma cobrança encontrada no histórico.</td></tr>`;
     return;
   }
 
   const statusMap = {
-    RECEIVED:  { label: 'Pago',         bg: '#ecfdf5', color: '#059669', dot: '#059669' },
-    CONFIRMED: { label: 'Pago',         bg: '#ecfdf5', color: '#059669', dot: '#059669' },
-    PENDING:   { label: 'Pendente',     bg: '#fffbeb', color: '#d97706', dot: '#d97706' },
-    OVERDUE:   { label: 'Vencida',      bg: '#fef2f2', color: '#dc2626', dot: '#dc2626' },
-    REFUNDED:  { label: 'Reembolsado',  bg: '#f1f5f9', color: '#64748b', dot: '#64748b' },
+    RECEIVED:  { label: 'Pago',        bg: 'rgba(16,185,129,0.1)',  color: '#10b981', dot: '#10b981' },
+    CONFIRMED: { label: 'Pago',        bg: 'rgba(16,185,129,0.1)',  color: '#10b981', dot: '#10b981' },
+    PENDING:   { label: 'Pendente',    bg: 'rgba(245,158,11,0.1)',  color: '#f59e0b', dot: '#f59e0b' },
+    OVERDUE:   { label: 'Vencida',     bg: 'rgba(239,68,68,0.1)',   color: '#ef4444', dot: '#ef4444' },
+    REFUNDED:  { label: 'Reembolsado', bg: 'rgba(100,116,139,0.1)', color: 'var(--text-muted)', dot: 'var(--text-muted)' },
   };
 
   tbody.innerHTML = invoices.map(inv => {
@@ -8503,22 +8695,22 @@ function _renderInvoiceRows(invoices) {
     const period= dt ? dt.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }) : '—';
     const periodLabel = period.charAt(0).toUpperCase() + period.slice(1);
     const val   = (inv.value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    const s     = statusMap[inv.status] || { label: inv.status || '—', bg: '#f8fafc', color: '#64748b', dot: '#64748b' };
+    const s     = statusMap[inv.status] || { label: inv.status || '—', bg: 'var(--bg-deep)', color: 'var(--text-muted)', dot: 'var(--text-muted)' };
 
     const actionBtn = inv.invoiceUrl
-      ? `<a href="${inv.invoiceUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;font-size:0.75rem;font-weight:700;padding:6px 14px;border-radius:20px;background:#f3e8ff;color:#7c3aed;text-decoration:none;transition:all .2s;">
+      ? `<a href="${inv.invoiceUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;font-size:0.75rem;font-weight:700;padding:6px 14px;border-radius:20px;background:var(--accent-light);color:var(--accent);text-decoration:none;transition:all .2s;">
            <i data-lucide="download" style="width:11px;height:11px;"></i> PDF
          </a>`
-      : `<span style="font-size:0.78rem;color:#cbd5e1;">—</span>`;
+      : `<span style="font-size:0.78rem;color:var(--text-muted);">—</span>`;
 
     return `
-      <tr style="border-bottom:1px solid #f8fafc;transition:background .15s;" onmouseover="this.style.background='#fafafa'" onmouseout="this.style.background=''">
-        <td style="padding:18px 24px;font-size:0.83rem;color:#64748b;font-weight:500;">${dtStr}</td>
-        <td style="padding:18px 24px;font-size:0.83rem;color:#1e293b;font-weight:600;">LB Finance Pro · ${periodLabel}</td>
-        <td style="padding:18px 24px;font-size:0.85rem;color:#1e293b;font-weight:800;text-align:right;">${val}</td>
+      <tr style="border-bottom:1px solid var(--border);transition:background .15s;" onmouseover="this.style.background='var(--bg-deep)'" onmouseout="this.style.background=''">
+        <td style="padding:18px 24px;font-size:0.83rem;color:var(--text-sub);font-weight:500;">${dtStr}</td>
+        <td style="padding:18px 24px;font-size:0.83rem;color:var(--text-main);font-weight:600;">LB Finance Pro · ${periodLabel}</td>
+        <td style="padding:18px 24px;font-size:0.85rem;color:var(--text-main);font-weight:800;text-align:right;">${val}</td>
         <td style="padding:18px 24px;text-align:center;">
           <span style="display:inline-flex;align-items:center;gap:5px;font-size:0.73rem;font-weight:700;padding:4px 13px;border-radius:20px;background:${s.bg};color:${s.color};">
-            <span style="width:5px;height:5px;border-radius:50%;background:${s.dot};"></span>${s.label}
+            <span style="width:5px;height:5px;border-radius:50%;background:${s.dot};flex-shrink:0;"></span>${s.label}
           </span>
         </td>
         <td style="padding:18px 24px;text-align:center;">${actionBtn}</td>
@@ -8653,6 +8845,11 @@ window.loadPaymentMethod       = loadPaymentMethod;
 window._renderPaymentDisplay   = _renderPaymentDisplay;
 window._renderUsageGrid        = _renderUsageGrid;
 window._renderInvoiceRows      = _renderInvoiceRows;
+window._renderSubAlerts        = _renderSubAlerts;
+window._renderPlanBenefits     = _renderPlanBenefits;
+window._renderBillingCycle     = _renderBillingCycle;
+window._confirmCycleChange     = _confirmCycleChange;
+window.reactivateSubscription  = reactivateSubscription;
 window.startupApp              = startupApp;
 window.saveProfileData         = saveProfileData;
 
