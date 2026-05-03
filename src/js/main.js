@@ -8193,27 +8193,6 @@ window.handleSubscribe = handleSubscribe;
 
 
 
-// LOGICA DE STARTUP FINAL
-
-// --- LOGICA DE STARTUP FINAL ---
-async function startupApp() {
-    console.log('Iniciando LB Finance...');
-    if (window._supabase) {
-        try {
-            const { data: { session }, error } = await window._supabase.auth.getSession();
-            if (session) {
-                window.appState.user.id = session.user.id;
-                window.appState.user.email = session.user.email;
-                if (typeof triggerPlanSync === 'function') triggerPlanSync();
-            } else {
-                window.location.href = 'login.html';
-            }
-        } catch (e) { console.error(e); }
-    }
-}
-window.addEventListener('DOMContentLoaded', startupApp);
-
-
 // --- LOGICA DE ASSINATURAS UNIFICADA ---
 
 function updateSubscriptionUI() {
@@ -8850,7 +8829,6 @@ window._renderPlanBenefits     = _renderPlanBenefits;
 window._renderBillingCycle     = _renderBillingCycle;
 window._confirmCycleChange     = _confirmCycleChange;
 window.reactivateSubscription  = reactivateSubscription;
-window.startupApp              = startupApp;
 window.saveProfileData         = saveProfileData;
 
 
