@@ -31,25 +31,28 @@ serve(async (req) => {
     );
     if (authErr || !user) throw new Error("Não autorizado");
 
-    // 2. Buscar o asaas_customer_id na tabela subscriptions
+    // 2. Verificar se usuário tem plano pro na tabela subscriptions
     const { data: sub, error: subErr } = await supabase
       .from("subscriptions")
       .select("asaas_customer_id, asaas_subscription_id, plan")
       .eq("user_id", user.id)
-      .single();
+      .maybeSingle();
 
-    if (subErr || !sub) throw new Error("Assinatura não encontrada");
-    if (sub.plan !== "pro") {
+    if (subErr) throw new Error("Erro ao buscar assinatura");
+    if (!sub || sub.plan !== "pro") {
       return new Response(JSON.stringify({ invoices: [] }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    if (!sub.asaas_customer_id) throw new Error("Cliente ASAAS não vinculado");
-
     // 3. Buscar cobranças no ASAAS
+    // Usa asaas_customer_id se disponível; caso contrário, busca pelo externalReference (user.id)
+    const queryParam = sub.asaas_customer_id
+      ? `customer=${sub.asaas_customer_id}`
+      : `externalReference=${user.id}`;
+
     const asaasRes = await fetch(
-      `${ASAAS_BASE}/payments?customer=${sub.asaas_customer_id}&limit=20&offset=0`,
+      `${ASAAS_BASE}/payments?${queryParam}&limit=20&offset=0`,
       {
         headers: {
           "access_token": ASAAS_API_KEY,

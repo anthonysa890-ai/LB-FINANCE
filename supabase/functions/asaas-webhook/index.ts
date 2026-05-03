@@ -32,7 +32,9 @@ serve(async (req) => {
           plan: 'pro',
           status: 'active',
           billing_cycle: payment.subscription ? 'monthly' : 'onetime',
-          current_period_end: new Date(Date.now() + 31 * 24 * 60 * 60 * 1000).toISOString(), // +31 dias
+          current_period_end: new Date(Date.now() + 31 * 24 * 60 * 60 * 1000).toISOString(),
+          asaas_customer_id: payment.customer || null,
+          asaas_subscription_id: payment.subscription || null,
           updated_at: new Date().toISOString()
         }, { onConflict: 'user_id' })
 
