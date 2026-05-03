@@ -2024,9 +2024,11 @@ console.log('App State carregado:', appState);
 
         function closeAccModal() { document.getElementById('modal-acc').classList.remove('active'); }
 
+        function selectAccColor(color) { accSelColor = color; renderAccountColorPicker(); }
+
         function renderAccountColorPicker() {
             document.getElementById('acc-color-picker').innerHTML = COLORS_SET.map(c =>
-                `<div class="pick-color ${c === accSelColor ? 'active' : ''}" style="background:${c}" onclick="accSelColor='${c}';renderAccountColorPicker()"></div>`
+                `<div class="pick-color ${c === accSelColor ? 'active' : ''}" style="background:${c}" onclick="selectAccColor('${c}')"></div>`
             ).join('');
         }
 
@@ -3322,7 +3324,7 @@ console.log('App State carregado:', appState);
         }
 
         // ── CARDS (Cartões de Crédito) ──
-        const CARD_COLORS = ["var(--accent)", "var(--accent-2)", "#A855F7", "#0EA5E9", "#EF4444", "#F59E0B", "#10B981", "#1F2937"];
+        const CARD_COLORS = ["#e01d8e","#8b5cf6","#A855F7","#0EA5E9","#3B82F6","#EF4444","#F97316","#F59E0B","#10B981","#06B6D4","#EC4899","#1F2937"];
         let selCardColor = CARD_COLORS[0];
 
         function openCardModal(index = null) {
@@ -3355,9 +3357,11 @@ console.log('App State carregado:', appState);
 
         function closeCardModal() { document.getElementById('modal-card').classList.remove('active'); }
 
+        function selectCardColor(color) { selCardColor = color; renderCardColorPicker(); }
+
         function renderCardColorPicker() {
             document.getElementById('card-color-picker').innerHTML = CARD_COLORS.map(c =>
-                `<div class="pick-color ${c === selCardColor ? 'active' : ''}" style="background:${c}" onclick="selCardColor='${c}';renderCardColorPicker()"></div>`
+                `<div class="pick-color ${c === selCardColor ? 'active' : ''}" style="background:${c}" onclick="selectCardColor('${c}')"></div>`
             ).join('');
         }
 
@@ -3823,7 +3827,7 @@ console.log('App State carregado:', appState);
             grid.innerHTML = appState.cards.map((c, i) => {
                 const info = getCardInvoiceInfo(c);
                 const usedPct = c.credit_limit > 0 ? Math.min(100,(info.totalUsed/Number(c.credit_limit))*100) : 0;
-                const barColor = 'linear-gradient(90deg, var(--accent), #f9a8d4)';
+                const barColor = `linear-gradient(90deg, ${c.color}, ${c.color}aa)`;
                 const currentMonthStr = defaultMonth;
                 const isPaidCurrentMonth = (appState.cards.find(cc=>cc.id===c.id)?.paid_invoices||[]).includes(currentMonthStr);
                 const overlayHtml = isPaidCurrentMonth ? '<div class="invoice-paid-overlay" style="position:absolute;top:14px;right:14px;width:28px;height:28px;background:#10B981;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(16,185,129,0.4);pointer-events:none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>' : '';
@@ -8044,6 +8048,7 @@ window.renderSettingsAccounts = renderSettingsAccounts;
 window.openAccModal = openAccModal;
 window.closeAccModal = closeAccModal;
 window.renderAccountColorPicker = renderAccountColorPicker;
+window.selectAccColor = selectAccColor;
 window.saveAccAction = saveAccAction;
 window.deleteAcc = deleteAcc;
 window.openQuickEntryModal = openQuickEntryModal;
@@ -8097,6 +8102,7 @@ window.renderCategoryPicker = renderCategoryPicker;
 window.openCardModal = openCardModal;
 window.closeCardModal = closeCardModal;
 window.renderCardColorPicker = renderCardColorPicker;
+window.selectCardColor = selectCardColor;
 window.saveCardAction = saveCardAction;
 window.deleteCard = deleteCard;
 window.computeInvoiceMonth = computeInvoiceMonth;

@@ -563,13 +563,9 @@
                     <p id="cartoes-tab-subtitle">Gerencie seus cartões, limites e faturas.</p>
                 </div>
                 <div style="display:flex; gap:12px; align-items:center;">
-                    <div class="toggle-group" style="height:44px; flex-shrink:0;">
-                        <button class="toggle-btn active" id="card-tab-credito" onclick="switchCardsView('credito')">
-                            <i data-lucide="credit-card" style="width:13px;height:13px;display:inline;vertical-align:middle;margin-right:5px;"></i>Crédito
-                        </button>
-                        <button class="toggle-btn" id="card-tab-debito" onclick="switchCardsView('debito')">
-                            <i data-lucide="landmark" style="width:13px;height:13px;display:inline;vertical-align:middle;margin-right:5px;"></i>Débito
-                        </button>
+                    <div class="toggle-group" style="flex-shrink:0;">
+                        <button class="toggle-btn active" id="card-tab-credito" onclick="switchCardsView('credito')">Crédito</button>
+                        <button class="toggle-btn" id="card-tab-debito" onclick="switchCardsView('debito')">Débito</button>
                     </div>
                     <button class="btn btn-primary" id="cartoes-add-btn" onclick="openCardModal()">
                         <i data-lucide="plus"></i> Adicionar Cartão
