@@ -1751,7 +1751,7 @@ console.log('App State carregado:', appState);
             const row = document.getElementById('bank-cards-row');
             const addBtn = `
             <div style="min-width:160px; height:190px; cursor:pointer; border:2px dashed #E2E8F0; border-radius:18px; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#94A3B8; transition:all 0.3s ease; margin-left:8px;" 
-                 onclick="switchTab('configuracoes')"
+                 onclick="switchTab('cartoes'); setTimeout(()=>switchCardsView('debito'),200);"
                  onmouseover="this.style.borderColor='var(--accent)'; this.style.color='var(--accent)'"
                  onmouseout="this.style.borderColor='#E2E8F0'; this.style.color='#94A3B8'">
                 <div style="width:36px; height:36px; border-radius:50%; border:2px solid currentColor; display:flex; align-items:center; justify-content:center; margin-bottom:8px;">

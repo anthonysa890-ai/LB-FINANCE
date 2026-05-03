@@ -1253,29 +1253,16 @@
                         <p>Gerencie seu acesso à conta</p>
                     </div>
                 </div>
-                <div class="settings-grid" style="grid-template-columns:1fr 1fr;">
-                    <div class="card" style="display:flex; flex-direction:column; justify-content:space-between;">
-                        <div>
-                            <div class="settings-section-title">Sessão Ativa</div>
-                            <p style="color:var(--text-sub); font-size:0.875rem; line-height:1.6; margin-bottom:20px;">
-                                Ao sair, você precisará fazer login novamente para acessar sua conta.
-                            </p>
-                        </div>
-                        <button class="btn btn-danger btn-full" onclick="handleLogout()">
-                            <i data-lucide="log-out"></i> Sair da Conta
-                        </button>
+                <div class="card" style="display:flex; flex-direction:column; justify-content:space-between;">
+                    <div>
+                        <div class="settings-section-title">Sessão Ativa</div>
+                        <p style="color:var(--text-sub); font-size:0.875rem; line-height:1.6; margin-bottom:20px;">
+                            Ao sair, você precisará fazer login novamente para acessar sua conta.
+                        </p>
                     </div>
-                    <div class="card" style="display:flex; flex-direction:column; justify-content:space-between; background:linear-gradient(135deg,rgba(83,23,166,0.04),rgba(124,58,237,0.04)); border:1px solid rgba(83,23,166,0.12);">
-                        <div>
-                            <div class="settings-section-title" style="color:var(--accent);">Contas Bancárias</div>
-                            <p style="color:var(--text-sub); font-size:0.875rem; line-height:1.6; margin-bottom:20px;">
-                                Gerencie suas contas de débito diretamente na aba Cartões.
-                            </p>
-                        </div>
-                        <button class="btn btn-ghost btn-full" onclick="switchTab('cartoes'); setTimeout(()=>switchCardsView('debito'),200);" style="border-color:rgba(83,23,166,0.2); color:var(--accent);">
-                            <i data-lucide="landmark"></i> Ir para Contas de Débito
-                        </button>
-                    </div>
+                    <button class="btn btn-danger btn-full" onclick="handleLogout()">
+                        <i data-lucide="log-out"></i> Sair da Conta
+                    </button>
                 </div>
             </div>
 
