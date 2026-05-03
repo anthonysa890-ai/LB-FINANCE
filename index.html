@@ -31,6 +31,15 @@
     
 
     <link rel="stylesheet" href="./src/css/main.css">
+    <script>
+      // Stubs síncronos — evitam ReferenceError enquanto o módulo (defer) ainda carrega.
+      // Quando main.js avaliar, window.switchTab etc. são sobrescritos com as funções reais.
+      var _navQueue = [];
+      function switchTab(id)        { _navQueue.push(['switchTab', id]); }
+      function toggleNavGroup(id)   { _navQueue.push(['toggleNavGroup', id]); }
+      function switchTabGated(id)   { _navQueue.push(['switchTabGated', id]); }
+      function switchTabMobile(id)  { _navQueue.push(['switchTabMobile', id]); }
+    </script>
     <script type="module" src="./src/js/main.js"></script>
 </head>
 

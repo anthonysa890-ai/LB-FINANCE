@@ -40,12 +40,18 @@ export const COLORS_SET = ["var(--accent)", "var(--accent-2)", "#A855F7", "#C084
 
 // --- INICIALIZAÇÃO GLOBAL ---
 window.appState = appState;
-// Registra funções de navegação ANTES de qualquer código que possa falhar
-// (function declarations são hoisted no escopo do módulo)
 window.switchTab = switchTab;
 window.toggleNavGroup = toggleNavGroup;
 window.switchTabGated = switchTabGated;
 window.switchTabMobile = switchTabMobile;
+
+// Replay chamadas enfileiradas pelos stubs do index.html (antes do módulo carregar)
+if (Array.isArray(window._navQueue) && window._navQueue.length > 0) {
+    const fns = { switchTab, toggleNavGroup, switchTabGated, switchTabMobile };
+    window._navQueue.forEach(([fn, id]) => { if (fns[fn]) fns[fn](id); });
+    window._navQueue = [];
+}
+
 console.log('App State carregado:', appState);
 
 // ── DIAGNÓSTICO GLOBAL DE ERROS ──
