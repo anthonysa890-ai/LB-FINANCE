@@ -130,11 +130,14 @@ console.log('App State carregado:', appState);
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
 
-            let icon = 'info';
-            if (type === 'success') icon = 'check-circle';
-            if (type === 'error') icon = 'alert-circle';
+            const icons = { success: 'check', error: 'x', info: 'zap', warning: 'alert-triangle' };
+            const icon = icons[type] || 'info';
 
-            toast.innerHTML = `<i data-lucide="${icon}"></i><span>${message}</span>`;
+            toast.innerHTML = `
+                <div class="toast-icon-wrap"><i data-lucide="${icon}"></i></div>
+                <span class="toast-msg">${message}</span>
+                <button class="toast-close" onclick="this.closest('.toast').remove()"><i data-lucide="x"></i></button>
+                <div class="toast-progress"></div>`;
             container.appendChild(toast);
             if (typeof lucide !== 'undefined') lucide.createIcons();
 
