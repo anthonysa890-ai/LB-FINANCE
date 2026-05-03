@@ -1279,6 +1279,42 @@
                 </div>
             </div>
 
+            <!-- ── APARÊNCIA ── -->
+            <div class="cfg-section">
+                <div class="cfg-section-label">
+                    <div class="cfg-section-label-icon"><i data-lucide="palette" style="width:16px;height:16px;"></i></div>
+                    <div>
+                        <h3>Aparência</h3>
+                        <p>Personalize as cores do aplicativo</p>
+                    </div>
+                </div>
+                <div class="card" style="padding:24px;">
+                    <div class="settings-section-title" style="margin-bottom:16px;">Tema de Cores</div>
+                    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                        <button id="theme-btn-rosa" onclick="setTheme('rosa')"
+                            class="toggle-btn active"
+                            style="flex:1; min-width:140px; display:flex; flex-direction:column; align-items:center; gap:10px; padding:16px 20px; border-radius:14px; border:2px solid transparent; transition:all .2s; cursor:pointer;">
+                            <div style="display:flex; gap:6px;">
+                                <span style="width:22px;height:22px;border-radius:50%;background:#e01d8e;display:inline-block;box-shadow:0 2px 6px rgba(224,29,142,0.4);"></span>
+                                <span style="width:22px;height:22px;border-radius:50%;background:#8b5cf6;display:inline-block;box-shadow:0 2px 6px rgba(139,92,246,0.4);"></span>
+                            </div>
+                            <div style="font-size:0.82rem;font-weight:700;">Rosa &amp; Roxo</div>
+                            <div style="font-size:0.7rem;color:var(--text-muted);font-weight:500;">Tema padrão</div>
+                        </button>
+                        <button id="theme-btn-azul" onclick="setTheme('azul')"
+                            class="toggle-btn"
+                            style="flex:1; min-width:140px; display:flex; flex-direction:column; align-items:center; gap:10px; padding:16px 20px; border-radius:14px; border:2px solid transparent; transition:all .2s; cursor:pointer;">
+                            <div style="display:flex; gap:6px;">
+                                <span style="width:22px;height:22px;border-radius:50%;background:#2563EB;display:inline-block;box-shadow:0 2px 6px rgba(37,99,235,0.4);"></span>
+                                <span style="width:22px;height:22px;border-radius:50%;background:#1D4ED8;display:inline-block;box-shadow:0 2px 6px rgba(29,78,216,0.4);"></span>
+                            </div>
+                            <div style="font-size:0.82rem;font-weight:700;">Azul</div>
+                            <div style="font-size:0.7rem;color:var(--text-muted);font-weight:500;">Tema alternativo</div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <!-- ── 3. SEGURANÇA E DADOS ── -->
             <div class="cfg-section">
                 <div class="cfg-section-label">

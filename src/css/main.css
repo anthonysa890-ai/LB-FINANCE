@@ -16,6 +16,9 @@
             --accent-2: #8b5cf6;
             --accent-2-light: rgba(139, 92, 246, 0.08);
             --primary-gradient: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+            --accent-rgb: 224, 29, 142;
+            --accent-2-rgb: 139, 92, 246;
+            --accent-tint: #f9a8d4;
             
             --danger: #F43F5E;
             --danger-light: #FFF1F2;
@@ -40,6 +43,18 @@
 
             --sidebar-w: 260px;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* ── TEMA AZUL ── */
+        html.theme-azul {
+            --accent:        #2563EB;
+            --accent-light:  rgba(37, 99, 235, 0.08);
+            --accent-2:      #1D4ED8;
+            --accent-2-light:rgba(29, 78, 216, 0.08);
+            --primary-gradient: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+            --accent-rgb:    37, 99, 235;
+            --accent-2-rgb:  29, 78, 216;
+            --accent-tint:   #93C5FD;
         }
 
         h1,
@@ -674,12 +689,12 @@
 
         .month-select-button:hover {
             border-color: var(--accent);
-            box-shadow: 0 2px 8px rgba(83,23,166,0.1);
+            box-shadow: 0 2px 8px rgba(var(--accent-2-rgb), 0.1);
         }
 
         .month-select-container.open .month-select-button {
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(83,23,166,0.1);
+            box-shadow: 0 0 0 3px rgba(var(--accent-2-rgb), 0.1);
         }
 
         .month-select-button::after {
@@ -725,7 +740,7 @@
         }
 
         .month-select-option:hover {
-            background: rgba(83,23,166,0.06);
+            background: rgba(var(--accent-2-rgb), 0.06);
             color: var(--accent);
         }
 
@@ -2916,7 +2931,7 @@
         .icon-action:hover {
             border-color: var(--accent);
             color: var(--accent);
-            background: rgba(83,23,166,0.2);
+            background: rgba(var(--accent-2-rgb), 0.2);
         }
 
         .icon-action.danger:hover {
@@ -4166,7 +4181,7 @@
             font-family: 'Outfit', sans-serif;
             font-size: 1.3rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #e01d8e, #8b5cf6);
+            background: var(--primary-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -4198,7 +4213,7 @@
         }
 
         .aov-left h1 span {
-            background: linear-gradient(135deg, #e01d8e, #8b5cf6);
+            background: var(--primary-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -4233,13 +4248,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #e01d8e;
+            color: var(--accent);
         }
 
         .aov-feat-icon svg {
             width: 18px;
             height: 18px;
-            stroke: #e01d8e;
+            stroke: var(--accent);
         }
 
         .aov-feat-text strong {
@@ -4271,7 +4286,7 @@
             height: 56px;
             border-radius: 14px;
             flex-shrink: 0;
-            background: linear-gradient(135deg, #e01d8e, #8b5cf6);
+            background: var(--primary-gradient);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -4430,7 +4445,7 @@
 
         .aov-input:focus,
         .aov-pw-input:focus {
-            border-bottom-color: #8b5cf6;
+            border-bottom-color: var(--accent-2);
         }
 
         .aov-pw-wrap {
@@ -4467,7 +4482,7 @@
             padding: 15px;
             border-radius: 50px;
             border: none;
-            background: linear-gradient(135deg, #e01d8e, #8b5cf6);
+            background: var(--primary-gradient);
             color: #fff;
             font-size: 1rem;
             font-weight: 700;
@@ -4475,7 +4490,7 @@
             cursor: pointer;
             transition: opacity 0.2s, transform 0.15s;
             margin-bottom: 14px;
-            box-shadow: 0 4px 16px rgba(139, 92, 246, 0.25);
+            box-shadow: 0 4px 16px rgba(var(--accent-2-rgb), 0.25);
         }
 
         .aov-submit-btn:hover {
@@ -4492,7 +4507,7 @@
             display: block;
             text-align: center;
             font-size: 0.85rem;
-            color: #8b5cf6;
+            color: var(--accent-2);
             text-decoration: none;
             margin-bottom: 28px;
             transition: opacity 0.2s;
@@ -4511,14 +4526,14 @@
         }
 
         .aov-register-link {
-            color: #8b5cf6;
+            color: var(--accent-2);
             font-weight: 700;
             text-decoration: none;
             cursor: pointer;
         }
 
         .aov-register-link:hover {
-            color: #e01d8e;
+            color: var(--accent);
         }
 
         /* Terms */
@@ -4786,7 +4801,7 @@
         }
 
         .auth-input:focus {
-            border-bottom-color: #8b5cf6 !important;
+            border-bottom-color: var(--accent-2) !important;
         }
 
         .auth-pw-toggle {
@@ -4842,7 +4857,7 @@
             display: block;
             text-align: center;
             font-size: 0.875rem;
-            color: #8b5cf6;
+            color: var(--accent-2);
             text-decoration: none;
             margin-bottom: 28px;
             transition: opacity 0.2s;
@@ -4861,14 +4876,14 @@
         }
 
         .auth-toggle-link {
-            color: #8b5cf6 !important;
+            color: var(--accent-2) !important;
             font-weight: 700;
             text-decoration: none;
             cursor: pointer;
         }
 
         .auth-toggle-link:hover {
-            color: #e01d8e !important;
+            color: var(--accent) !important;
         }
 
         /* Terms */
@@ -5497,8 +5512,8 @@
     }
     .ind-index-card:hover {
         transform: scale(1.045) translateY(-3px);
-        box-shadow: 0 14px 40px rgba(83,23,166,.18);
-        border-color: rgba(83,23,166,.28);
+        box-shadow: 0 14px 40px rgba(var(--accent-2-rgb), .18);
+        border-color: rgba(var(--accent-2-rgb), .28);
         z-index: 5;
     }
 
@@ -5554,7 +5569,7 @@
         display: flex; align-items: center; justify-content: center; flex-shrink: 0;
         margin-top: 2px;
     }
-    .ind-fund-card.fiscal .ind-fund-icon       { background:rgba(83,23,166,.1);  color:var(--accent); }
+    .ind-fund-card.fiscal .ind-fund-icon       { background:rgba(var(--accent-2-rgb), .1);  color:var(--accent); }
     .ind-fund-card.atividade .ind-fund-icon    { background:rgba(14,165,233,.1); color:#0EA5E9; }
     .ind-fund-card.externo .ind-fund-icon      { background:rgba(16,185,129,.1); color:#10B981; }
     .ind-fund-card.expectativas .ind-fund-icon { background:rgba(245,158,11,.1); color:#F59E0B; }
@@ -5599,7 +5614,7 @@
     .news-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:4px; }
     @media (max-width:768px) { .news-grid { grid-template-columns:1fr; } }
     .news-column { background:var(--card-bg); border:1px solid var(--border); border-radius:var(--radius-lg); overflow:hidden; }
-    .news-column-header { display:flex; align-items:center; gap:10px; padding:18px 22px 14px; border-bottom:1px solid var(--border); background:rgba(83,23,166,.025); }
+    .news-column-header { display:flex; align-items:center; gap:10px; padding:18px 22px 14px; border-bottom:1px solid var(--border); background:rgba(var(--accent-2-rgb), .025); }
     .news-column-header h2 { font-family:'Outfit',sans-serif; font-size:1rem; font-weight:700; color:var(--text-main); margin:0; }
     .news-flag { font-size:1.3rem; line-height:1; }
     .news-list { display:flex; flex-direction:column; max-height:600px; overflow-y:auto; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
@@ -5630,9 +5645,9 @@
     }
     .news-cat-pill.business    { background:rgba(16,185,129,.1);  color:#10B981; }
     .news-cat-pill.world       { background:rgba(14,165,233,.1);  color:#0EA5E9; }
-    .news-cat-pill.tech        { background:rgba(83,23,166,.1);   color:var(--accent); }
+    .news-cat-pill.tech        { background:rgba(var(--accent-2-rgb), .1);   color:var(--accent); }
     .news-cat-pill.politics    { background:rgba(245,158,11,.1);  color:#F59E0B; }
-    .news-cat-pill.reddit-br   { background:rgba(83,23,166,.1);   color:var(--accent); }
+    .news-cat-pill.reddit-br   { background:rgba(var(--accent-2-rgb), .1);   color:var(--accent); }
     .news-cat-pill.reddit-gl   { background:rgba(14,165,233,.1);  color:#0EA5E9; }
     .news-cat-pill.default     { background:rgba(156,154,169,.12); color:var(--text-sub); }
 

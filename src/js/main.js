@@ -123,6 +123,26 @@ console.log('App State carregado:', appState);
         let selIcon = ICONS_SET[0], selColor = COLORS_SET[0];
         let accSelColor = COLORS_SET[0];
 
+        // ── TEMA ──
+        function setTheme(theme) {
+            const html = document.documentElement;
+            if (theme === 'azul') {
+                html.classList.add('theme-azul');
+            } else {
+                html.classList.remove('theme-azul');
+            }
+            localStorage.setItem('lb_theme', theme);
+            const btnRosa = document.getElementById('theme-btn-rosa');
+            const btnAzul = document.getElementById('theme-btn-azul');
+            if (btnRosa) btnRosa.classList.toggle('active', theme !== 'azul');
+            if (btnAzul) btnAzul.classList.toggle('active', theme === 'azul');
+        }
+        // Aplica tema salvo ao carregar
+        (function() {
+            const saved = localStorage.getItem('lb_theme');
+            if (saved === 'azul') document.documentElement.classList.add('theme-azul');
+        })();
+
         // ── TOAST PREMIUM ──
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
@@ -1014,6 +1034,12 @@ console.log('App State carregado:', appState);
                 };
 
                 populateMonthFilters();
+                // Sincroniza botões de tema com o estado atual
+                const savedTheme = localStorage.getItem('lb_theme') || 'rosa';
+                const btnRosa = document.getElementById('theme-btn-rosa');
+                const btnAzul = document.getElementById('theme-btn-azul');
+                if (btnRosa) btnRosa.classList.toggle('active', savedTheme !== 'azul');
+                if (btnAzul) btnAzul.classList.toggle('active', savedTheme === 'azul');
                 safeRun('renderSettingsAccounts');
                 safeRun('renderBankCards');
                 safeRun('updateEntryCategories');
@@ -1509,7 +1535,7 @@ console.log('App State carregado:', appState);
                             <div style="display:inline-flex; align-items:center; gap:5px; background:#ECFDF5; color:#059669; font-size:0.75rem; font-weight:700; padding:6px 14px; border-radius:20px;">
                                 <i data-lucide="check" style="width:13px; height:13px;"></i> Paga
                             </div>` : `
-                            <button style="display:inline-flex; align-items:center; gap:5px; background:var(--accent-2); color:white; font-size:0.75rem; font-weight:700; padding:6px 14px; border-radius:20px; border:none; cursor:pointer; box-shadow:0 4px 12px rgba(139,92,246,0.3);" onclick="event.stopPropagation(); switchTab('cartoes'); setTimeout(()=>payInvoiceFromCard('${c.id}'),150)">
+                            <button style="display:inline-flex; align-items:center; gap:5px; background:var(--accent-2); color:white; font-size:0.75rem; font-weight:700; padding:6px 14px; border-radius:20px; border:none; cursor:pointer; box-shadow:0 4px 12px rgba(var(--accent-2-rgb), 0.3);" onclick="event.stopPropagation(); switchTab('cartoes'); setTimeout(()=>payInvoiceFromCard('${c.id}'),150)">
                                 <i data-lucide="arrow-up-right" style="width:13px; height:13px;"></i> Pagar
                             </button>`}
                         </div>
@@ -2670,7 +2696,7 @@ console.log('App State carregado:', appState);
                     });
 
                     const statusBadge = alreadyLaunched
-                        ? `<span class="chip" style="font-size:0.65rem; background:rgba(83,23,166,0.1); color:var(--accent);">✓ Lançado</span>`
+                        ? `<span class="chip" style="font-size:0.65rem; background:rgba(var(--accent-2-rgb), 0.1); color:var(--accent);">✓ Lançado</span>`
                         : `<span class="chip" style="font-size:0.65rem; background:rgba(123,75,191,0.1); color:var(--accent-2);">Pendente</span>`;
 
                     const validityText = r.end_date
@@ -3135,7 +3161,7 @@ console.log('App State carregado:', appState);
                                 </div>
                                 <div class="cat-actions" style="margin-left:auto; display:flex; align-items:center; gap:2px;" onclick="event.stopPropagation()">
                                     <div id="cat-action-menu-${gi}" class="cat-action-menu" style="display:flex; overflow:hidden; transition:max-width 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease; max-width:0; opacity:0; align-items:center; gap:2px; pointer-events:none;">
-                                        <div onclick="openCatModal(${gi})" style="display:flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:8px; cursor:pointer; color:#f1f5f9; transition:var(--transition);" onmouseenter="this.style.background='rgba(83,23,166,0.2)';this.style.color='var(--accent)'" onmouseleave="this.style.background='';this.style.color='#f1f5f9'" title="Editar">
+                                        <div onclick="openCatModal(${gi})" style="display:flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:8px; cursor:pointer; color:#f1f5f9; transition:var(--transition);" onmouseenter="this.style.background='rgba(var(--accent-2-rgb), 0.2)';this.style.color='var(--accent)'" onmouseleave="this.style.background='';this.style.color='#f1f5f9'" title="Editar">
                                             <i data-lucide="edit-3" style="width:15px; height:15px;"></i>
                                         </div>
                                         <div onclick="deleteCat(${gi})" style="display:flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:8px; cursor:pointer; color:var(--danger); transition:var(--transition);" onmouseenter="this.style.background='rgba(244,63,94,0.15)'" onmouseleave="this.style.background=''" title="Apagar">
@@ -3884,15 +3910,15 @@ console.log('App State carregado:', appState);
                             <div style="display:flex; gap:12px; align-items:center;" onclick="event.stopPropagation()">
                                 
                                 <div style="display:flex;align-items:center;justify-content:space-between;background:#f8faff;border:1px solid var(--accent);border-radius:999px;padding:4px 8px;margin:0;transition:all 0.15s;"
-                                     onmouseenter="this.style.boxShadow='0 0 0 3px rgba(224,29,142,0.15)'"
+                                     onmouseenter="this.style.boxShadow='0 0 0 3px rgba(var(--accent-rgb), 0.15)'"
                                      onmouseleave="this.style.borderColor='var(--accent)'; this.style.boxShadow='none'"
                                      onmousedown="this.style.transform='scale(0.97)'"
                                      onmouseup="this.style.transform='scale(1)'">
-                                    <button onclick="changeCardMonth('${c.id}', -1)" style="border:none;background:transparent;cursor:pointer;padding:4px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;border-radius:50%;transition:0.15s;" onmouseenter="this.style.background='rgba(224,29,142,0.1)';this.style.color='var(--accent)'" onmouseleave="this.style.background='transparent';this.style.color='var(--text-muted)'">
+                                    <button onclick="changeCardMonth('${c.id}', -1)" style="border:none;background:transparent;cursor:pointer;padding:4px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;border-radius:50%;transition:0.15s;" onmouseenter="this.style.background='rgba(var(--accent-rgb), 0.1)';this.style.color='var(--accent)'" onmouseleave="this.style.background='transparent';this.style.color='var(--text-muted)'">
                                         <i data-lucide="chevron-left" style="width:16px;height:16px;"></i>
                                     </button>
                                     <span id="card-month-label-${c.id}" data-val="${defaultMonth}" style="font-size:0.75rem;font-weight:700;color:var(--text-main);user-select:none;text-transform:capitalize;margin:0 8px;transition:0.15s;">${defaultMonthLabel}</span>
-                                    <button onclick="changeCardMonth('${c.id}', 1)" style="border:none;background:transparent;cursor:pointer;padding:4px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;border-radius:50%;transition:0.15s;" onmouseenter="this.style.background='rgba(224,29,142,0.1)';this.style.color='var(--accent)'" onmouseleave="this.style.background='transparent';this.style.color='var(--text-muted)'">
+                                    <button onclick="changeCardMonth('${c.id}', 1)" style="border:none;background:transparent;cursor:pointer;padding:4px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;border-radius:50%;transition:0.15s;" onmouseenter="this.style.background='rgba(var(--accent-rgb), 0.1)';this.style.color='var(--accent)'" onmouseleave="this.style.background='transparent';this.style.color='var(--text-muted)'">
                                         <i data-lucide="chevron-right" style="width:16px;height:16px;"></i>
                                     </button>
                                 </div>
@@ -3929,7 +3955,7 @@ console.log('App State carregado:', appState);
                             </div>
                             <div class="progress-track" style="height:10px; background:#f1f5f9; border-radius:5px; position:relative; overflow:visible;">
                                 <!-- Brilho lateral igual à imagem -->
-                                <div style="position:absolute; left:-12px; top:-8px; bottom:-8px; width:30px; background:radial-gradient(ellipse at center, rgba(224,29,142,0.2) 0%, transparent 70%); border-radius:50%; pointer-events:none;"></div>
+                                <div style="position:absolute; left:-12px; top:-8px; bottom:-8px; width:30px; background:radial-gradient(ellipse at center, rgba(var(--accent-rgb), 0.2) 0%, transparent 70%); border-radius:50%; pointer-events:none;"></div>
                                 <div class="progress-fill" style="width:${usedPct}%; background:${barColor}; border-radius:5px; position:relative; z-index:1;"></div>
                             </div>
                         </div>
@@ -3949,7 +3975,7 @@ console.log('App State carregado:', appState);
                             <div style="flex-shrink:0; display:flex; gap:10px;">
                                 <button id="card-pay-btn-${c.id}"
                                     onclick="event.stopPropagation(); payInvoiceFromCard('${c.id}', document.getElementById('card-month-label-${c.id}').getAttribute('data-val'))"
-                                    style="height:40px;border-radius:999px;border:none;background:${isPaidCurrentMonth ? '#10B981' : 'var(--accent)'};color:white;font-size:0.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.15s;padding:0 16px;box-shadow:0 4px 14px rgba(224,29,142,0.3);"
+                                    style="height:40px;border-radius:999px;border:none;background:${isPaidCurrentMonth ? '#10B981' : 'var(--accent)'};color:white;font-size:0.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.15s;padding:0 16px;box-shadow:0 4px 14px rgba(var(--accent-rgb), 0.3);"
                                     onmouseenter="this.style.filter='brightness(1.1)'"
                                     onmouseleave="this.style.filter='none'"
                                     onmousedown="this.style.transform='scale(0.95)'"
@@ -3958,7 +3984,7 @@ console.log('App State carregado:', appState);
                                 </button>
                                 <button onclick="event.stopPropagation(); openCardHistoryModal('${c.id}', document.getElementById('card-month-label-${c.id}').getAttribute('data-val'))"
                                     style="height:40px;border-radius:999px;border:1px solid var(--accent);background:transparent;color:var(--text-main);font-size:0.8rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.15s;padding:0 16px;"
-                                    onmouseenter="this.style.color='var(--accent)';this.style.background='rgba(224,29,142,0.05)'"
+                                    onmouseenter="this.style.color='var(--accent)';this.style.background='rgba(var(--accent-rgb), 0.05)'"
                                     onmouseleave="this.style.borderColor='var(--accent)';this.style.color='var(--text-main)';this.style.background='transparent'"
                                     onmousedown="this.style.transform='scale(0.95)'"
                                     onmouseup="this.style.transform='scale(1)'">
@@ -4206,7 +4232,7 @@ console.log('App State carregado:', appState);
             }).join('') : `<tr><td colspan="3" style="text-align:center;padding:32px;color:var(--text-muted);">Nenhuma transação neste mês.</td></tr>`;
 
             const monthLabelFmt = monthLabel.charAt(0).toUpperCase() + monthLabel.slice(1);
-            document.getElementById('card-hist-title').innerHTML = `<span style="background:linear-gradient(135deg,var(--accent),#f9a8d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">${card.name}</span><span style="color:var(--text-muted);font-weight:500;font-size:1.1rem;margin-left:10px;">·</span><span style="color:var(--text-muted);font-size:1.1rem;font-weight:700;margin-left:8px;">${monthLabelFmt}</span>`;
+            document.getElementById('card-hist-title').innerHTML = `<span style="background:linear-gradient(135deg,var(--accent),var(--accent-tint));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">${card.name}</span><span style="color:var(--text-muted);font-weight:500;font-size:1.1rem;margin-left:10px;">·</span><span style="color:var(--text-muted);font-size:1.1rem;font-weight:700;margin-left:8px;">${monthLabelFmt}</span>`;
             document.getElementById('card-hist-count').textContent = `${txs.length} lançamento${txs.length!==1?'s':''}`;
 
             document.getElementById('card-hist-body').innerHTML       = rows;
@@ -4235,7 +4261,7 @@ console.log('App State carregado:', appState);
                 `;
             } else {
                 footerHtml += `
-                    <button onclick="closeCardHistoryModal(); payInvoiceFromCard('${cardId}', '${monthVal}')" style="padding:0 32px; height:44px; font-size:0.95rem; font-weight:800; border-radius:12px; background:linear-gradient(135deg, var(--accent), var(--accent-2)); color:white; border:none; cursor:pointer; display:flex; align-items:center; gap:8px; box-shadow:0 4px 14px rgba(224,29,142,0.3); transition:all 0.15s;" onmouseenter="this.style.transform='translateY(-1px)'" onmouseleave="this.style.transform='translateY(0)'" onmousedown="this.style.transform='scale(0.97)'" onmouseup="this.style.transform='scale(1)'">
+                    <button onclick="closeCardHistoryModal(); payInvoiceFromCard('${cardId}', '${monthVal}')" style="padding:0 32px; height:44px; font-size:0.95rem; font-weight:800; border-radius:12px; background:linear-gradient(135deg, var(--accent), var(--accent-2)); color:white; border:none; cursor:pointer; display:flex; align-items:center; gap:8px; box-shadow:0 4px 14px rgba(var(--accent-rgb), 0.3); transition:all 0.15s;" onmouseenter="this.style.transform='translateY(-1px)'" onmouseleave="this.style.transform='translateY(0)'" onmousedown="this.style.transform='scale(0.97)'" onmouseup="this.style.transform='scale(1)'">
                         <svg width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg> Pagar Fatura
                     </button>
                 `;
@@ -7996,6 +8022,7 @@ const cpCpfInput = document.getElementById('cp-cpf');
 
 // ── EXPORTAÇÃO GLOBAL PARA COMPATIBILIDADE COM HTML ──
 window.showToast = showToast;
+window.setTheme = setTheme;
 window.triggerConfetti = triggerConfetti;
 window.checkInactivity = checkInactivity;
 window.updateSmartAlerts = updateSmartAlerts;
