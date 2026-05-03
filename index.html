@@ -478,9 +478,9 @@
 
 
                         <button type="submit" id="btn-save-entry"
-                            style="width:100%; margin-top:20px; height:52px; border:none; border-radius:999px; background:linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%); color:white; font-size:0.9375rem; font-weight:700; font-family:'Inter',sans-serif; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 6px 20px rgba(139,92,246,0.4); transition:transform 0.15s, box-shadow 0.15s;"
-                            onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 10px 28px rgba(139,92,246,0.5)'"
-                            onmouseleave="this.style.transform='translateY(0)';this.style.boxShadow='0 6px 20px rgba(139,92,246,0.4)'">
+                            style="width:100%; margin-top:20px; height:52px; border:none; border-radius:999px; background:var(--primary-gradient); color:white; font-size:0.9375rem; font-weight:700; font-family:'Inter',sans-serif; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 6px 20px rgba(var(--accent-2-rgb),0.4); transition:transform 0.15s, box-shadow 0.15s;"
+                            onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 10px 28px rgba(var(--accent-2-rgb),0.5)'"
+                            onmouseleave="this.style.transform='translateY(0)';this.style.boxShadow='0 6px 20px rgba(var(--accent-2-rgb),0.4)'">
                             <i data-lucide="plus" style="width:18px;height:18px;"></i>
                             Salvar Lançamento
                         </button>
@@ -3004,7 +3004,7 @@ CREATE POLICY "own" ON investment_account_events FOR ALL USING (auth.uid()=user_
             <input type="text" id="cp-phone" maxlength="15" style="width:100%; padding:10px 14px; border:1px solid #E2E8F0; border-radius:8px; font-family:'Inter', sans-serif; font-size:0.9rem;" placeholder="(00) 90000-0000">
         </div>
         
-        <button id="cp-submitBtn" onclick="saveProfileData()" style="width:100%; padding:12px; background:linear-gradient(135deg, #e01d8e 0%, #8b5cf6 100%); color:#fff; border:none; border-radius:8px; font-weight:700; cursor:pointer; font-size:0.9rem; transition:opacity 0.2s;">Salvar Dados</button>
+        <button id="cp-submitBtn" onclick="saveProfileData()" style="width:100%; padding:12px; background:var(--primary-gradient); color:#fff; border:none; border-radius:8px; font-weight:700; cursor:pointer; font-size:0.9rem; transition:opacity 0.2s;">Salvar Dados</button>
         <p id="cp-errorMsg" style="color:#F43F5E; font-size:0.8rem; margin-top:12px; display:none; text-align:center; font-weight:500;"></p>
     </div>
 </div>
