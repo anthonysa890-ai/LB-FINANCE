@@ -40,19 +40,31 @@ export const COLORS_SET = ["var(--accent)", "var(--accent-2)", "#A855F7", "#C084
 
 // --- INICIALIZAÇÃO GLOBAL ---
 window.appState = appState;
-window.switchTab = switchTab;
-window.toggleNavGroup = toggleNavGroup;
-window.switchTabGated = switchTabGated;
+
+// Registra as implementações reais no namespace __nav (usado pelos stubs de nav-init.js)
+window.__nav = {
+    switchTab,
+    toggleNavGroup,
+    switchTabGated,
+    switchTabMobile,
+};
+
+// Também expõe diretamente no window para compatibilidade com o resto do código
+window.switchTab       = switchTab;
+window.toggleNavGroup  = toggleNavGroup;
+window.switchTabGated  = switchTabGated;
 window.switchTabMobile = switchTabMobile;
 
-// Replay chamadas enfileiradas pelos stubs do index.html (antes do módulo carregar)
-if (Array.isArray(window._navQueue) && window._navQueue.length > 0) {
-    const fns = { switchTab, toggleNavGroup, switchTabGated, switchTabMobile };
-    window._navQueue.forEach(([fn, id]) => { if (fns[fn]) fns[fn](id); });
-    window._navQueue = [];
+// Replay de chamadas que chegaram antes do módulo carregar
+if (Array.isArray(window.__navQueue) && window.__navQueue.length > 0) {
+    window.__navQueue.forEach(function(item) {
+        var fn = window.__nav[item.name];
+        if (fn) fn.apply(null, item.args);
+    });
+    window.__navQueue = [];
 }
 
-console.log('App State carregado:', appState);
+console.log('LB Finance: módulo carregado.');
 
 // ── DIAGNÓSTICO GLOBAL DE ERROS ──
         window.onerror = function (msg, url, line, col, error) {
